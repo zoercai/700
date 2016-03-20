@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>softeng700</groupId>
+	<artifactId>project72</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>#72: Grouping similar newspaper articles</name>
+	<description>Grouping related documents involves entity recognition and then measuring how similar the meaning of the entities are. Both these tasks are complex. In this project, you'll tackle the second task. You will manually identify the entities of interest and build a system that does probabilistic data matching of newspaper articles based on the identified entities. The results of the matching will be visualized. The technique will be compared against state of the art algorithms.</description>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-stable</artifactId>
+			<version>3.6.13</version>
+		</dependency>
+
+	</dependencies>
+</project>
