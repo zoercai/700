@@ -34,14 +34,14 @@ class Preprocessor:
 
 
     def mapTerm(self, tokens):
-        termMap = {}
+        termDict = {}
 
         for token in tokens:
-            if token in termMap:
-                termMap[token] = termMap[token] + 1
+            if token in termDict:
+                termDict[token] = termDict[token] + 1
             else:
-                termMap[token] = 1
+                termDict[token] = 1
 
-        print(termMap.items())
-        return termMap
+        print(termDict.items())
+        return termDict
 
