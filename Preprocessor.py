@@ -20,7 +20,7 @@ class Preprocessor:
         lemmatized_tokens = [lemmatizer.lemmatize(i, j[0].lower()) if j[0].lower() in ['a', 'n', 'v'] else lemmatizer.lemmatize(i) for i, j in
               pos_tag(filtered_tokens)]
 
-        tagged = nltk.pos_tag(lemmatized_tokens)
+        # tagged = nltk.pos_tag(lemmatized_tokens)
 
         print(tokens)
         print(len(tokens))
@@ -28,4 +28,20 @@ class Preprocessor:
         print(len(filtered_tokens))
         print(lemmatized_tokens)
         print(len(lemmatized_tokens))
-        print(tagged)
+        # print(tagged)
+        return lemmatized_tokens
+
+
+
+    def mapTerm(self, tokens):
+        termMap = {}
+
+        for token in tokens:
+            if token in termMap:
+                termMap[token] = termMap[token] + 1
+            else:
+                termMap[token] = 1
+
+        print(termMap.items())
+        return termMap
+

@@ -4,6 +4,7 @@ import sys
 file = open("test.txt")
 
 preprocessor = Preprocessor()
-preprocessor.tokenize(file)
+tokens = preprocessor.tokenize(file)
+map = preprocessor.mapTerm(tokens)
 
 
