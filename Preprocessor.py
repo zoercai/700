@@ -1,73 +1,31 @@
 import re
 import nltk
+from nltk import word_tokenize, pos_tag
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
 
 
 class Preprocessor:
     def tokenize(self, file):
         content = file.read()
-        tokenizer = RegexpTokenizer(r'\w+')
 
+        tokenizer = RegexpTokenizer(r'\w+')
         tokens = tokenizer.tokenize(content)
         tokens = [token.lower() for token in tokens]
-        tagged = nltk.pos_tag(tokens)
 
-        filtered_words = [word for word in tokens if word not in stopwords.words('english')]
+        filtered_tokens = [word for word in tokens if word not in stopwords.words('english')]
+
+        lemmatizer = WordNetLemmatizer()
+        lemmatized_tokens = [lemmatizer.lemmatize(i, j[0].lower()) if j[0].lower() in ['a', 'n', 'v'] else lemmatizer.lemmatize(i) for i, j in
+              pos_tag(filtered_tokens)]
+
+        tagged = nltk.pos_tag(lemmatized_tokens)
 
         print(tokens)
         print(len(tokens))
-        print(filtered_words)
-        print(len(filtered_words))
-        # print(re.sub('[^a-zA-Z0-9 _-]','',line).lower().split())
-
-#
-#
-# print("hello world")
-#
-# name = "Zoe wants a burger, haha."
-#
-# word_list = name.split(" ")
-#
-# print(word_list)
-#
-# test_file = open("test.txt")
-#
-# print(test_file.read())
-#
-# test_file.close()
-#
-#
-#
-# class Document:
-#     __name = None
-#     __totalWords = 0
-#
-#     def __init__(self, name, words):
-#         self.__name = name;
-#
-#
-#     def set_name(self, name):
-#         self.__name = name;
-#
-#     def get_name(self):
-#         return self.__name
-#
-#     def get_type(self):
-#         print("Document")
-#
-#
-# cat = Document("hello")
-#
-#
-# class SubDocument(Document):
-#
-#     def __init__(self, name, words, blah):
-#         super(SubDocument, self).__init__(name, words)
-#
-#     def overloading(self, optionValue=None):
-#         if optionValue is None:
-#             # do nothing
-#         else:
-#             # do something
-#
+        print(filtered_tokens)
+        print(len(filtered_tokens))
+        print(lemmatized_tokens)
+        print(len(lemmatized_tokens))
+        print(tagged)
