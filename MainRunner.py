@@ -7,11 +7,6 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 
-import sys
-
-# file = open("test.txt")
-token_dict = {}
-
 
 def tokenize(text):
     tokenizer = RegexpTokenizer(r'\w+')
@@ -27,6 +22,10 @@ def tokenize(text):
         pos_tag(filtered_tokens)]
     return lemmatized_tokens
 
+
+token_dict = {}
+
+# Read in all test files
 for subdir, dirs, files in os.walk(os.getcwd()+"/tests"):
     for file in files:
         if file.endswith(".txt"):
@@ -35,13 +34,20 @@ for subdir, dirs, files in os.walk(os.getcwd()+"/tests"):
             text = document.read()
             token_dict[file] = text
 
+# Create tokenizer
 tfidf = TfidfVectorizer(tokenizer=tokenize, stop_words='english')
+
+# Convert the tokens into matrix of tfidf values
 tfs = tfidf.fit_transform(token_dict.values())
+
+# Get tokens values
 feature_names = tfidf.get_feature_names()
 
+# Print tfidf's that aren't zero
 for col in tfs[0].nonzero()[1]:
     print(feature_names[col], ' - ', tfs[0, col])
 
+# Testing with one single file
 testFile = open(os.getcwd()+"/tests/na.6.txt", 'r').read()
 response = tfidf.transform([testFile])
 
