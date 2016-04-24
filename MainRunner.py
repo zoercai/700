@@ -17,7 +17,13 @@ def tokenize(text):
 
     filtered_tokens = [word for word in tokens if ((word not in stopwords.words('english')))]
 
-    # print(pos_tag(filtered_tokens))
+    # for word, tag in pos_tag(filtered_tokens):
+    #     if tag == 'NN' or tag == 'NNS' or tag == 'NNP' or tag == 'NNPS':
+    #         print(word)
+    #         print(tag)
+
+    filtered_tokens = [word for word, tag in pos_tag(filtered_tokens) if tag == 'NN' or tag == 'NNS' or tag == 'NNP' or tag == 'NNPS']
+    # print(filtered_tokens)
 
     lemmatizer = WordNetLemmatizer()
     lemmatized_tokens = [
@@ -47,19 +53,27 @@ tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english')
 
 # Convert the tokens into matrix of tfidf values
 tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
-# print(token_dict.values())
-print(tfidf_matrix.shape)
 
-# Get tokens values
-feature_names = tfidf_vectorizer.get_feature_names()
+# Order the matrix from least sum to most
+ordered_matrix = numpy.take(tfidf_matrix.todense(), numpy.sum(tfidf_matrix.todense(), axis=0).argsort(),axis=1)
+
+# Extract the highest sum features (columns)
+ncol = ordered_matrix.shape[1]
+number_of_features = 20;
+top_feature_matrix = ordered_matrix[0:, (ncol-number_of_features-1):(ncol-1)]
+# print(top_feature_matrix)
+# print(tfidf_matrix.shape)
+
+# Get tokens values (TODO not correct after extracting top features)
+# feature_names = tfidf_vectorizer.get_feature_names()
 # print(feature_names)
 
 # Calculate centroid
-centroid = numpy.mean(tfidf_matrix.todense(), axis=0)
+centroid = numpy.mean(top_feature_matrix, axis=0)
 print("Centroid: ")
 print(centroid)
 print("Centroid similarities: ")
-centroid_similarities = cosine_similarity(centroid, tfidf_matrix)
+centroid_similarities = cosine_similarity(centroid, top_feature_matrix)
 print(centroid_similarities)
 
 # Calculate average similarity
