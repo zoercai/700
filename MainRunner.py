@@ -63,10 +63,10 @@ ordered_matrix = numpy.take(tfidf_matrix.todense(), numpy.sum(tfidf_matrix.toden
 
 # Extract the highest sum features (columns)
 ncol = ordered_matrix.shape[1]
-number_of_features = 20;
+number_of_features = 20
 top_feature_matrix = ordered_matrix[0:, (ncol-number_of_features-1):(ncol-1)]
-# print(top_feature_matrix)
-# print(tfidf_matrix.shape)
+print(top_feature_matrix)
+print(tfidf_matrix.shape)
 
 # Get tokens values (TODO not correct after extracting top features)
 # feature_names = tfidf_vectorizer.get_feature_names()
@@ -92,12 +92,19 @@ for similarity in centroid_similarities[0]:
 # print("Similarities to first: ")
 # print(similarities)
 
+top_feature_matrix = numpy.concatenate((top_feature_matrix,centroid),axis=0)
 pca = decomposition.PCA(n_components=2)
 top_feature_matrix = pca.fit_transform(top_feature_matrix)
+print("top features:")
 print(top_feature_matrix)
 
+
+count = 1;
 for f1, f2 in top_feature_matrix:
     plt.scatter( f1, f2 )
+    plt.annotate(count, (f1, f2))
+    count=count+1
+
 plt.show()
 
 # k_means = cluster.KMeans(n_clusters=4)
