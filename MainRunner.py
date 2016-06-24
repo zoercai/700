@@ -88,10 +88,6 @@ for similarity in centroid_similarities[0]:
     if similarity > mean_similarity:
         print(similarity)
 
-# similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
-# print("Similarities to first: ")
-# print(similarities)
-
 pca = decomposition.PCA(n_components=2)
 top_feature_matrix = pca.fit_transform(top_feature_matrix)
 print(top_feature_matrix)
@@ -100,5 +96,11 @@ for f1, f2 in top_feature_matrix:
     plt.scatter( f1, f2 )
 plt.show()
 
-# k_means = cluster.KMeans(n_clusters=4)
-# k_means.fit()
+# Calculate cosine similarity
+similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
+print("Similarities to first: ")
+print(similarities)
+
+k_means = cluster.KMeans(n_clusters=4)
+k_means.fit()
+
