@@ -94,24 +94,70 @@ for similarity in centroid_similarities[0]:
 
 top_feature_matrix = numpy.concatenate((top_feature_matrix,centroid),axis=0)
 pca = decomposition.PCA(n_components=2)
-top_feature_matrix = pca.fit_transform(top_feature_matrix)
+top_feature_matrix_pca = pca.fit_transform(top_feature_matrix)
 print("top features:")
-print(top_feature_matrix)
+print(top_feature_matrix_pca)
 
 
 count = 1;
-for f1, f2 in top_feature_matrix:
+for f1, f2 in top_feature_matrix_pca:
     plt.scatter( f1, f2 )
     plt.annotate(count, (f1, f2))
     count=count+1
 
-plt.show()
+# plt.show()
 
 # Calculate cosine similarity
 similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
 print("Similarities to first: ")
 print(similarities)
 
-k_means = cluster.KMeans(n_clusters=4)
-k_means.fit()
 
+from time import time
+import numpy as np
+from matplotlib import pyplot as plt
+
+#----------------------------------------------------------------------
+# Visualize the clustering
+def plot_clustering(X_red, X, labels, title=None):
+    x_min, x_max = np.min(X_red, axis=0), np.max(X_red, axis=0)
+    X_red = (X_red - x_min) / (x_max - x_min)
+
+    plt.figure(figsize=(6, 4))
+    count = 1
+    for i in range(X_red.shape[0]):
+
+        plt.text(X_red[i, 0], X_red[i, 1], count,
+                 color=plt.cm.spectral(labels[i] / 10.),
+                 fontdict={'weight': 'bold', 'size': 9})
+        count=count+1
+
+    plt.xticks([])
+    plt.yticks([])
+    if title is not None:
+        plt.title(title, size=17)
+    plt.axis('on')
+    # plt.tight_layout()
+
+#----------------------------------------------------------------------
+print("Computing embedding")
+X_red = top_feature_matrix_pca
+print("Done.")
+
+from sklearn.cluster import AgglomerativeClustering
+
+for linkage in ('ward', 'average', 'complete'):
+    clustering = AgglomerativeClustering(linkage=linkage, n_clusters=3)
+    t0 = time()
+    clustering.fit(X_red)
+    print("%s : %.2fs" % (linkage, time() - t0))
+
+    # for f1, f2 in top_feature_matrix_pca:
+    #     plt.scatter(f1, f2)
+    #     plt.annotate(count, (f1, f2))
+    #     count = count + 1
+
+    plot_clustering(X_red, top_feature_matrix_pca, clustering.labels_, "%s linkage" % linkage)
+
+
+plt.show()
