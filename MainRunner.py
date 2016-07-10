@@ -1,11 +1,9 @@
-import string
 import os
 import numpy
 import matplotlib.pyplot as plt
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn import cluster
 from sklearn import decomposition
 
 from nltk import word_tokenize, pos_tag
@@ -41,7 +39,7 @@ def tokenize(text):
 token_dict = {}
 
 # Read in all test files
-for subdir, dirs, files in os.walk(os.getcwd()+"/tests1"):
+for subdir, dirs, files in os.walk(os.getcwd()+"/tests3"):
     for file in files:
         if file.endswith(".txt"):
             file_path = subdir + os.path.sep + file
@@ -63,7 +61,7 @@ ordered_matrix = numpy.take(tfidf_matrix.todense(), numpy.sum(tfidf_matrix.toden
 
 # Extract the highest sum features (columns)
 ncol = ordered_matrix.shape[1]
-number_of_features = 20
+number_of_features = 30
 top_feature_matrix = ordered_matrix[0:, (ncol-number_of_features-1):(ncol-1)]
 print(top_feature_matrix)
 print(tfidf_matrix.shape)
@@ -123,7 +121,7 @@ def plot_clustering(X_red, X, labels, title=None):
     x_min, x_max = np.min(X_red, axis=0), np.max(X_red, axis=0)
     X_red = (X_red - x_min) / (x_max - x_min)
 
-    plt.figure(figsize=(6, 4))
+    plt.figure()
     count = 1
     for i in range(X_red.shape[0]):
 
@@ -147,7 +145,7 @@ print("Done.")
 from sklearn.cluster import AgglomerativeClustering
 
 for linkage in ('ward', 'average', 'complete'):
-    clustering = AgglomerativeClustering(linkage=linkage, n_clusters=3)
+    clustering = AgglomerativeClustering(linkage=linkage, n_clusters=5)
     t0 = time()
     clustering.fit(X_red)
     print("%s : %.2fs" % (linkage, time() - t0))
