@@ -61,7 +61,7 @@ ordered_matrix = numpy.take(tfidf_matrix.todense(), numpy.sum(tfidf_matrix.toden
 
 # Extract the highest sum features (columns)
 ncol = ordered_matrix.shape[1]
-number_of_features = 30
+number_of_features = 5
 top_feature_matrix = ordered_matrix[0:, (ncol-number_of_features-1):(ncol-1)]
 print(top_feature_matrix)
 print(tfidf_matrix.shape)
@@ -135,7 +135,7 @@ def plot_clustering(X_red, X, labels, title=None):
     if title is not None:
         plt.title(title, size=17)
     plt.axis('on')
-    # plt.tight_layout()
+    plt.tight_layout()
 
 #----------------------------------------------------------------------
 print("Computing embedding")
@@ -145,12 +145,14 @@ print("Done.")
 from sklearn.cluster import AgglomerativeClustering
 
 for linkage in ('ward', 'average', 'complete'):
-    clustering = AgglomerativeClustering(linkage=linkage, n_clusters=5)
+    clustering = AgglomerativeClustering(linkage=linkage, n_clusters=3)
     t0 = time()
     clustering.fit(X_red)
     print("%s : %.2fs" % (linkage, time() - t0))
 
-    # for f1, f2 in top_feature_matrix_pca:
+    # plt.figure()
+    # count = 1
+    # for f1, f2 in X_red:
     #     plt.scatter(f1, f2)
     #     plt.annotate(count, (f1, f2))
     #     count = count + 1
@@ -159,3 +161,4 @@ for linkage in ('ward', 'average', 'complete'):
 
 
 plt.show()
+
