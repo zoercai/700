@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Newspaper Clustering</title>
+</head>
+
+<body>
+
+<script type="text/javascript">
+  var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+
+<form id='inputs' class="inputs">
+<label for="startDate">Start Date: </label> <input type='text' size='30' id='startDate'>
+<label for="endDate">End Date: </label> <input type='text' size='30' id='endDate'>
+<button id="submit">Submit</button>
+</form>
+
+<div id='text' class="text"></div>
+
+<script type=text/javascript src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+<script type=text/javascript src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
