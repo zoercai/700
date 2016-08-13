@@ -96,44 +96,9 @@ plt.show()
 # print("Similarities to first: ")
 # print(similarities)
 
-
-# # ----------------------------------------------------------------------
-# # Visualize the clustering
-# def plot_clustering(X_red, X, labels, title=None):
-#     x_min, x_max = numpy.min(X_red, axis=0), numpy.max(X_red, axis=0)
-#     X_red = (X_red - x_min) / (x_max - x_min)
-#
-#     plt.figure()
-#     count = 1
-#     for i in range(X_red.shape[0]):
-#         plt.text(X_red[i, 0], X_red[i, 1], count,
-#                  color=plt.cm.spectral(labels[i] / 10.),
-#                  fontdict={'weight': 'bold', 'size': 9})
-#         count += 1
-#
-#     plt.xticks([])
-#     plt.yticks([])
-#     if title is not None:
-#         plt.title(title, size=17)
-#     plt.axis('on')
-#     plt.tight_layout()
-#     plt.show()
-
-
 # ----------------------------------------------------------------------
 from sklearn.cluster import AgglomerativeClustering
 
 for linkage in ('ward', 'average', 'complete'):
     clustering = AgglomerativeClustering(linkage=linkage, n_clusters=3)
     print(clustering.fit_predict(reduced_matrix))
-    # clustering.fit(X_red)
-    # print("%s : %.2fs" % (linkage, time() - t0))
-
-    # plt.figure()
-    # count = 1
-    # for f1, f2 in X_red:
-    #     plt.scatter(f1, f2)
-    #     plt.annotate(count, (f1, f2))
-    #     count = count + 1
-
-    # plot_clustering(reduced_matrix, reduced_matrix, clustering.labels_, "%s linkage" % linkage)
