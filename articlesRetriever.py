@@ -4,12 +4,13 @@
 from urllib.request import urlopen
 import json
 import codecs
+from Article import Article
 
 
 def retrieve_articles(from_date, to_date):
     api_key = 'aaa8ed1a-d2e0-42f4-9437-11e77e48244b'
 
-    query = 'olympics'   # Optional, only used for testing
+    query = ''   # Optional, only used for testing
     from_date = '2016-07-10'
     to_date = '2016-08-10'
 
@@ -26,7 +27,12 @@ def retrieve_articles(from_date, to_date):
     data = json.load(reader(json_obj))
 
     articles = []
+
     for item in data['response']['results']:
-        articles.append(item['blocks']['body'][0]['bodyTextSummary'])
+        name = item['webTitle']
+        url = item['webUrl']
+        body = item['blocks']['body'][0]['bodyTextSummary']
+        new_article = Article(name, url, body)
+        articles.append(new_article)
 
     return articles
