@@ -92,9 +92,6 @@ $RECYCLE.BIN/
 ## File-based project format:
 *.iws
 
-## Added by Zoe
-.idea/*.iml
-
 ## Plugin-specific files:
 
 # IntelliJ
