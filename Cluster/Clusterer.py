@@ -1,24 +1,17 @@
-import os
-import sys
 import logging
-import numpy
+import warnings
+import sys
 import matplotlib.pyplot as plt
-from scipy.spatial.distance import euclidean
-from sklearn.metrics.pairwise import euclidean_distances
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn import decomposition
-from sklearn.cluster import AgglomerativeClustering
-from sklearn.cluster import KMeans, MiniBatchKMeans
-
-from nltk import word_tokenize, pos_tag
-from nltk.tokenize import RegexpTokenizer
+from Cluster.Node import Node
+from Cluster.Link import Link
+from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
-
-from Node import Node
-from Link import Link
+from nltk.tokenize import RegexpTokenizer
+from sklearn import decomposition
+from sklearn.cluster import MiniBatchKMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import euclidean_distances
 
 
 def tokenize(text):
@@ -30,49 +23,22 @@ def tokenize(text):
     # Turns words into their bases
     lemmatizer = WordNetLemmatizer()
     post_to_lem = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r'}
-    lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]]) for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
+    lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]])
+                         for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
     logging.debug(lemmatized_tokens)
     return lemmatized_tokens
 
 
-# # Calculate centroid
-# centroid = numpy.mean(tfidf_matrix.todense(), axis=0)
-# logging.info("Centroid: ")
-# logging.info(centroid)
-# logging.info("Centroid similarities: ")
-# centroid_similarities = cosine_similarity(centroid, tfidf_matrix)
-# logging.info(centroid_similarities)
-
-# # Calculate average similarity
-# mean_similarity = numpy.mean(centroid_similarities)
-# logging.info("Mean similarity")
-# logging.info(mean_similarity)
-#
-# for similarity in centroid_similarities[0]:
-#     if similarity > mean_similarity:
-#         logging.info(similarity)
-
-# similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
-# logging.info("Similarities to first: ")
-# logging.info(similarities)
-
-# matrix_with_centroid = numpy.concatenate((tfidf_matrix.todense(), centroid), axis=0)
-
-
-# # Calculate cosine similarity
-# similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
-# print("Similarities to first: ")
-# print(similarities)
-
-
 def cluster(articles_list):
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     # Add articles into dictionary
     token_dict = {}
     for article in articles_list:
         token_dict[article.name] = article.body
-    logging.info(token_dict.keys())
+    for headline in token_dict.keys():
+        logging.info(headline)
 
     # Convert the tokens into matrix of tfidf values
     max_features = 70
@@ -84,7 +50,7 @@ def cluster(articles_list):
     logging.info(feature_names)
 
     # Reduce dimensionality to 2 for plotting
-    pca = decomposition.PCA(n_components=5)
+    pca = decomposition.PCA(n_components=2)
     reduced_matrix = pca.fit_transform(tfidf_matrix.todense())
 
     logging.info("Document points positions:")
@@ -99,7 +65,7 @@ def cluster(articles_list):
 
     # k-means clustering
     clustering = MiniBatchKMeans(n_clusters=k_clusters, init='k-means++', n_init=1, verbose=0)
-    print(clustering.fit_transform(reduced_matrix))
+    # print(clustering.fit_transform(reduced_matrix))
     clusters = clustering.fit_predict(reduced_matrix)
     print(clusters)
 
@@ -120,12 +86,12 @@ def cluster(articles_list):
             new_link = Link(articles_list[i].name, "centroid_" + str(j), distance)
             link_list.append(new_link)
 
-    return node_list, link_list
+    # # Plot the points
+    # count = 1
+    # for f1, f2 in reduced_matrix:
+    #     plt.scatter(f1, f2)
+    #     plt.annotate(count, (f1, f2))
+    #     count += 1
+    # plt.show()
 
-    # Plot the points
-    count = 1
-    for f1, f2 in reduced_matrix:
-        plt.scatter(f1, f2)
-        plt.annotate(count, (f1, f2))
-        count += 1
-    plt.show()
+    return node_list, link_list

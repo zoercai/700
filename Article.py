@@ -1,4 +1,3 @@
-
 class Article:
     name = ''
     url = ''

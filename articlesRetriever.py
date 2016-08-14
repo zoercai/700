@@ -1,23 +1,26 @@
 # Given the date range of the articles to retrieve, retrieves article plain body text from the Guardian API and returns
 #  a list of Article objects.
 
-from urllib.request import urlopen
-import json
 import codecs
+import json
+from urllib.request import urlopen
 from Article import Article
 
 
-def retrieve_articles(from_date, to_date):
+def retrieve_articles(from_date=None, to_date=None):
     api_key = 'aaa8ed1a-d2e0-42f4-9437-11e77e48244b'
 
     query = ''   # Optional, only used for testing
-    from_date = '2016-07-10'
-    to_date = '2016-08-10'
+
+    if from_date is 0:
+        from_date = '2016-07-10'
+    if to_date is 0:
+        to_date = '2016-08-10'
 
     url = 'http://content.guardianapis.com/search?q=' + query
     url += '&show-blocks=body'
-    url += '&from-date=' + from_date
-    url += '&to-date=' + to_date
+    url += '&from-date=' + str(from_date)
+    url += '&to-date=' + str(to_date)
     url += '&api-key=' + api_key
     print(url)
 

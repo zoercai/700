@@ -2,13 +2,7 @@
  * Created by Zoe on 13/08/16.
  */
 
-
 function loadData() {
-    // var $text = $('#text');
-
-    // clear out old data before new request
-    // $text.text("");
-
     // get values
     var startDate = $('#startDate').val();
     var endDate = $('#endDate').val();
@@ -18,17 +12,9 @@ function loadData() {
     svg.attr('height', $(window).height());
 
     visualise(startDate, endDate);
-    //
-    // // load data
-    // $.getJSON($SCRIPT_ROOT+'/cluster', {start_date: startDate, end_date: endDate}, function(data){
-    //     // $('body').append(data.result);
-    //     visualise(data.result)
-    // })
 
     return false;
 };
-
-
 
 function visualise(startDate, endDate){
     var svg = d3.select("svg"),
@@ -86,8 +72,7 @@ function visualise(startDate, endDate){
             .attr("cy", function(d) { return d.y; });
       }
     });
-
-
+    
     function dragstarted(d) {
       if (!d3.event.active) simulation.alphaTarget(0.3).restart();
       d.fx = d.x;
@@ -107,7 +92,6 @@ function visualise(startDate, endDate){
 
     return true;
 }
-
 
 
 $('#inputs').submit(loadData);

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-from ArticlesRetriever import retrieve_articles
-from Clusterer import cluster
 import json
-import jsonpickle
+
+from flask import Flask, render_template, request
+
+from ArticlesRetriever import retrieve_articles
+from Cluster.Clusterer import cluster
 
 app = Flask(__name__)
 
@@ -24,9 +25,6 @@ def clusterer():
     node_list, link_list = cluster(articles_list)
 
     # format & jsonify
-    # nodes_and_links = {'nodes': node_list, 'links': link_list}
-    # final = jsonpickle.encode(nodes_and_links)
-    # print(final)
     json_nodelist = json.dumps([ob.__dict__ for ob in node_list])
     json_linklist = json.dumps([ob.__dict__ for ob in link_list])
     final = '{"nodes":' + json_nodelist + ', "links":' + json_linklist + '}'
