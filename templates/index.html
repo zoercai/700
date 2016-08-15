@@ -3,41 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Newspaper Clustering</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<style>
-    .links line {
-      stroke: #999;
-      stroke-opacity: 0.6;
-    }
-
-    .nodes circle {
-      stroke: #fff;
-      stroke-width: 2px;
-    }
-
-    .node text {
-      pointer-events: none;
-      font: 1em sans-serif;
-    }
-
-    .loading{
-        display: none;
-        margin: auto;
-        position: relative;
-        top: 25vh;
-        font: 1em sans-serif;
-        text-align: center;
-    }
-
-    div.loading{
-        margin-top: 5vh;
-    }
-
-    img.loading{
-        width: 10%;
-        height: auto;
-    }
-</style>
 
 <body>
 
@@ -52,7 +19,11 @@
 </form>
 
 <img class="loading" src="{{ url_for('static', filename='balls.svg') }}">
-<div class="loading">Retrieving articles</div>
+<div class="loading msg">Cutting out newspaper articles</div>
+<div class="loading msg">Arranging articles</div>
+<div class="loading msg">Making newspaper hats</div>
+<div class="loading msg">Clustering articles</div>
+<div class="loading msg">Gluing articles together</div>
 
 <svg></svg>
 
