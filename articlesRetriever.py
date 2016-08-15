@@ -10,6 +10,7 @@ from Article import Article
 def retrieve_articles(from_date=None, to_date=None):
     api_key = 'aaa8ed1a-d2e0-42f4-9437-11e77e48244b'
 
+    results = 50
     query = ''   # Optional, only used for testing
 
     if from_date is 0:
@@ -19,6 +20,7 @@ def retrieve_articles(from_date=None, to_date=None):
 
     url = 'http://content.guardianapis.com/search?q=' + query
     url += '&show-blocks=body'
+    url += '&page-size=' + str(results)
     url += '&from-date=' + str(from_date)
     url += '&to-date=' + str(to_date)
     url += '&api-key=' + api_key
@@ -34,8 +36,9 @@ def retrieve_articles(from_date=None, to_date=None):
     for item in data['response']['results']:
         name = item['webTitle']
         url = item['webUrl']
-        body = item['blocks']['body'][0]['bodyTextSummary']
-        new_article = Article(name, url, body)
-        articles.append(new_article)
+        body = item['blocks']['body']
+        if len(body) > 0:
+            new_article = Article(name, url, body[0]['bodyTextSummary'])
+            articles.append(new_article)
 
     return articles

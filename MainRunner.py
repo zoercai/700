@@ -1,7 +1,5 @@
 import json
-
 from flask import Flask, render_template, request
-
 from ArticlesRetriever import retrieve_articles
 from Cluster.Clusterer import cluster
 

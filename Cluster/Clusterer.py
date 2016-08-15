@@ -82,9 +82,15 @@ def cluster(articles_list):
     link_list = []
     distance_matrix = euclidean_distances(reduced_matrix, clustering.cluster_centers_)
     for i, row in enumerate(distance_matrix):
-        for j, distance in enumerate(row):
-            new_link = Link(articles_list[i].name, "centroid_" + str(j), distance)
-            link_list.append(new_link)
+        centroid_num = clusters[i]
+        distance = row[centroid_num]
+        new_link = Link(articles_list[i].name, "centroid_" + str(centroid_num), distance)
+        link_list.append(new_link)
+
+    # for i, row in enumerate(distance_matrix):
+    #     for j, distance in enumerate(row):
+    #         new_link = Link(articles_list[i].name, "centroid_" + str(j), distance)
+    #         link_list.append(new_link)
 
     # # Plot the points
     # count = 1

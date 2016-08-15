@@ -6,13 +6,18 @@
 </head>
 <style>
     .links line {
-  stroke: #999;
-  stroke-opacity: 0.6;
-}
+      stroke: #999;
+      stroke-opacity: 0.6;
+    }
 
-.nodes circle {
-  stroke: #fff;
-  stroke-width: 1.5px;
+    .nodes circle {
+      stroke: #fff;
+      stroke-width: 1.5px;
+    }
+
+    .node text {
+  pointer-events: none;
+  font: 10px sans-serif;
 }
 </style>
 
@@ -22,14 +27,13 @@
   var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
 
-
 <form id='inputs' class="inputs">
 <label for="startDate">Start Date: </label> <input type='text' size='30' id='startDate'>
 <label for="endDate">End Date: </label> <input type='text' size='30' id='endDate'>
 <button id="submit">Submit</button>
 </form>
 
-<svg></svg>
+<svg width="960" height="600"></svg>
 
 <script type=text/javascript src="{{ url_for('static', filename='jquery.min.js') }}"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
