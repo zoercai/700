@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
 from ArticlesRetriever import retrieve_articles
 from Cluster.Clusterer import cluster
 
@@ -27,7 +27,13 @@ def clusterer():
     json_linklist = json.dumps([ob.__dict__ for ob in link_list])
     final = '{"nodes":' + json_nodelist + ', "links":' + json_linklist + '}'
 
-    return final
+    # print(final)
+
+    resp = Response(response=final,
+                    status=200,
+                    mimetype="application/json")
+
+    return resp
 
 
 if __name__ == '__main__':

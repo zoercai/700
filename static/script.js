@@ -13,28 +13,32 @@ function loadData() {
 };
 
 function visualise(startDate, endDate) {
-    var width = +window.innerWidth;
-    var height = +window.innerHeight;
-    var zoom = d3.zoom().scaleExtent([.2, 10]).on("zoom", zoomed);
+    var json_source = $SCRIPT_ROOT + '/cluster?start_date=' + startDate + '&end_date=' + endDate
+    // var json_source = $SCRIPT_ROOT + '/static/miserables.json'
+    // json_source = $SCRIPT_ROOT + '/static/output.json'
 
-    var svg = d3.select("svg"),
-        width = +svg.attr("width"),
-        height = +svg.attr("height");
+    d3.json(json_source, function (error, graph) {
+        var width = +window.innerWidth;
+        var height = +window.innerHeight;
+        var zoom = d3.zoom().scaleExtent([.2, 10]).on("zoom", zoomed);
 
-    // var svg = d3.select("svg").attr("viewBox", "0 0 " + width + " " + height ).attr("preserveAspectRatio", "xMinYMin");
-    svg.call(zoom);
-    var mainContainer = svg.append("g").attr("width", width).attr("height", height);
+        var svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
 
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
+        // var svg = d3.select("svg").attr("viewBox", "0 0 " + width + " " + height ).attr("preserveAspectRatio", "xMinYMin");
+        svg.call(zoom);
+        var mainContainer = svg.append("g").attr("width", width).attr("height", height);
 
-    var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function (d) {
-            return d.id;
-        }))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2));
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    d3.json($SCRIPT_ROOT + '/cluster?start_date=' + startDate + '&end_date=' + endDate, function (error, graph) {
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function (d) {
+                return d.id;
+            }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
         if (error) throw error;
 
         var link = mainContainer.append("g")
@@ -43,11 +47,19 @@ function visualise(startDate, endDate) {
             .data(graph.links)
             .enter().append("line")
             .attr("stroke-width", function (d) {
-                return Math.sqrt(d.value);
+                return d.value*2;
             });
 
         var node = mainContainer.append("g").attr("class", "nodes")
             .selectAll("nodes").data(graph.nodes).enter().append("g").attr("class","node");
+
+        var text = node.append("text")
+            .attr("dx", 10)
+            .attr("dy", ".35em")
+            .text(function (d) {
+                return d.id;
+            })
+            .style("stroke", "gray");
 
         var circle = node
             .append("circle")
@@ -60,18 +72,10 @@ function visualise(startDate, endDate) {
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        circle.append("title")
-            .text(function (d) {
-                return d.id;
-            });
-
-        var text = node.append("text")
-            .attr("dx", 10)
-            .attr("dy", ".35em")
-            .text(function (d) {
-                return d.id;
-            })
-            .style("stroke", "gray");
+        // circle.append("title")
+        //     .text(function (d) {
+        //         return d.id;
+        //     });
 
         simulation
             .nodes(graph.nodes)
@@ -95,14 +99,6 @@ function visualise(startDate, endDate) {
                     return d.target.y;
                 });
 
-            d3.selectAll("circle")
-                .attr("cx", function (d) {
-                    return d.x;
-                })
-                .attr("cy", function (d) {
-                    return d.y;
-                });
-
             d3.selectAll("text")
                 .attr("x", function (d) {
                     return d.x;
@@ -110,31 +106,52 @@ function visualise(startDate, endDate) {
                 .attr("y", function (d) {
                     return d.y;
                 });
+
+            d3.selectAll("circle")
+                .attr("cx", function (d) {
+                    return d.x;
+                })
+                .attr("cy", function (d) {
+                    return d.y;
+                });
         }
 
-        zoom.scaleTo(svg, 2);
+        // zoom.scaleTo(svg, 2);
+
+        $('.node').each(function () {
+            $(this).children('text').hide();
+            $(this).on('mouseover', function () {
+                console.log('mouseover!')
+                $(this).children('text').show();
+            });
+            $(this).on('mouseout', function () {
+                $(this).children('text').hide();
+            });
+        })
+
+        function zoomed() {
+            mainContainer.attr("transform", d3.event.transform);
+        }
+
+        function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
     });
 
-    function zoomed() {
-        mainContainer.attr("transform", d3.event.transform);
-    }
 
-    function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-
-    function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-    }
-
-    function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    }
 
     return true;
 }
