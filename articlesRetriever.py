@@ -10,7 +10,7 @@ from Article import Article
 def retrieve_articles(from_date=None, to_date=None):
     api_key = 'aaa8ed1a-d2e0-42f4-9437-11e77e48244b'
 
-    results = 20
+    results = 50
     query = ''   # Optional, only used for testing
 
     if from_date is 0:

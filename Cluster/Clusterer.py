@@ -1,7 +1,9 @@
 import logging
 import warnings
 import sys
+import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import show, scatter, annotate
 from Cluster.Node import Node
 from Cluster.Link import Link
 from nltk import pos_tag
@@ -41,7 +43,7 @@ def cluster(articles_list):
         logging.info(headline)
 
     # Convert the tokens into matrix of tfidf values
-    max_features = 70
+    max_features = 10
     tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features)
     tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
 
@@ -83,7 +85,7 @@ def cluster(articles_list):
     distance_matrix = euclidean_distances(reduced_matrix, clustering.cluster_centers_)
     for i, row in enumerate(distance_matrix):
         centroid_num = clusters[i]
-        distance = row[centroid_num]
+        distance = int(row[centroid_num]*10) + 1
         new_link = Link(articles_list[i].name, "centroid_" + str(centroid_num), distance)
         link_list.append(new_link)
 
@@ -92,12 +94,12 @@ def cluster(articles_list):
     #         new_link = Link(articles_list[i].name, "centroid_" + str(j), distance)
     #         link_list.append(new_link)
 
-    # # Plot the points
-    # count = 1
-    # for f1, f2 in reduced_matrix:
-    #     plt.scatter(f1, f2)
-    #     plt.annotate(count, (f1, f2))
-    #     count += 1
-    # plt.show()
+    # Plot the points
+    count = 1
+    for f1, f2 in reduced_matrix:
+        plt.scatter(f1, f2)
+        plt.annotate(count, (f1, f2))
+        count += 1
+    show()
 
     return node_list, link_list

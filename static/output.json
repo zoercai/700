@@ -1,0 +1,59 @@
+{
+  "nodes": [
+    {
+      "id": "Armchair Olympics: Seven\u2019s troubled Australian TV coverage reviewed | Russell Jackson",
+      "group": 0
+    },
+    {
+      "id": "Olympic men's basketball: Australia 88-98 USA \u2013 as it happened",
+      "group": 0
+    },
+    {
+      "id": "Seb Coe enthused as Team GB double their medals tally on better day in Rio",
+      "group": 1
+    },
+    {
+      "id": "Black patients half as likely to receive pain medication as white patients, study finds",
+      "group": 0
+    },
+    {
+      "id": "Dan Bibby\u2019s sudden death try sends GB through to rugby sevens semis",
+      "group": 0
+    },
+    {
+      "id": "centroid_0",
+      "group": 0
+    },
+    {
+      "id": "centroid_1",
+      "group": 1
+    }
+  ],
+  "links": [
+    {
+      "source": "Armchair Olympics: Seven\u2019s troubled Australian TV coverage reviewed | Russell Jackson",
+      "value": 3,
+      "target": "centroid_0"
+    },
+    {
+      "source": "Olympic men's basketball: Australia 88-98 USA \u2013 as it happened",
+      "value": 9,
+      "target": "centroid_0"
+    },
+    {
+      "source": "Seb Coe enthused as Team GB double their medals tally on better day in Rio",
+      "value": 1,
+      "target": "centroid_1"
+    },
+    {
+      "source": "Black patients half as likely to receive pain medication as white patients, study finds",
+      "value": 5,
+      "target": "centroid_0"
+    },
+    {
+      "source": "Dan Bibby\u2019s sudden death try sends GB through to rugby sevens semis",
+      "value": 4,
+      "target": "centroid_0"
+    }
+  ]
+}
