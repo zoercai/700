@@ -19,6 +19,24 @@
       pointer-events: none;
       font: 1em sans-serif;
     }
+
+    .loading{
+        display: none;
+        margin: auto;
+        position: relative;
+        top: 25vh;
+        font: 1em sans-serif;
+        text-align: center;
+    }
+
+    div.loading{
+        margin-top: 5vh;
+    }
+
+    img.loading{
+        width: 10%;
+        height: auto;
+    }
 </style>
 
 <body>
@@ -32,6 +50,9 @@
 <label for="endDate">End Date: </label> <input type='text' size='30' id='endDate'>
 <button id="submit">Submit</button>
 </form>
+
+<img class="loading" src="{{ url_for('static', filename='balls.svg') }}">
+<div class="loading">Retrieving articles</div>
 
 <svg></svg>
 

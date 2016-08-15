@@ -7,6 +7,10 @@ function loadData() {
     var startDate = $('#startDate').val();
     var endDate = $('#endDate').val();
 
+    $('svg').empty();
+
+    $('.loading').attr("style","display: block;");
+
     visualise(startDate, endDate);
 
     return false;
@@ -45,7 +49,7 @@ function visualise(startDate, endDate) {
             .data(graph.links)
             .enter().append("line")
             .attr("stroke-width", function (d) {
-                return 15/(d.value);    // the higher the distance, the thinner the line
+                return 30/(d.value);    // the higher the distance, the thinner the line
             });
 
         var node = mainContainer.append("g").attr("class", "nodes")
@@ -61,7 +65,7 @@ function visualise(startDate, endDate) {
 
         var circle = node
             .append("circle")
-            .attr("r", 10)
+            .attr("r", 13)
             .attr("fill", function (d) {
                 return color(d.group);
             })
@@ -69,6 +73,19 @@ function visualise(startDate, endDate) {
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
+
+        $('.node').each(function () {
+            $(this).children('text').hide();
+            $(this).on('mouseover', function () {
+                console.log('mouseover!')
+                $(this).children('text').show();
+            });
+            $(this).on('mouseout', function () {
+                $(this).children('text').hide();
+            });
+        })
+
+        $('.loading').attr("style","display: none;");
 
         simulation
             .nodes(graph.nodes)
@@ -108,17 +125,6 @@ function visualise(startDate, endDate) {
                     return d.y;
                 });
         }
-
-        $('.node').each(function () {
-            $(this).children('text').hide();
-            $(this).on('mouseover', function () {
-                console.log('mouseover!')
-                $(this).children('text').show();
-            });
-            $(this).on('mouseout', function () {
-                $(this).children('text').hide();
-            });
-        })
 
         function zoomed() {
             mainContainer.attr("transform", d3.event.transform);

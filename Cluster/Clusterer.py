@@ -117,7 +117,7 @@ def cluster(articles_list):
     # # Reduce dimensionality to 2 for plotting
     # pca = decomposition.PCA(n_components=2)
     # reduced_matrix = pca.fit_transform(tfidf_matrix.todense())
-
+    #
     # # Plot the points
     # count = 1
     # for f1, f2 in reduced_matrix:
