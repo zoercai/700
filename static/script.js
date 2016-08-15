@@ -22,10 +22,6 @@ function visualise(startDate, endDate) {
         var height = +window.innerHeight;
         var zoom = d3.zoom().scaleExtent([.2, 10]).on("zoom", zoomed);
 
-        // var svg = d3.select("svg"),
-        //     width = +svg.attr("width"),
-        //     height = +svg.attr("height");
-
         var svg = d3.select("svg").attr("viewBox", "0 0 " + width + " " + height ).attr("preserveAspectRatio", "xMinYMin");
         svg.call(zoom);
         var mainContainer = svg.append("g").attr("width", width).attr("height", height);
@@ -35,6 +31,8 @@ function visualise(startDate, endDate) {
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function (d) {
                 return d.id;
+            }).distance(function(d){
+                return Math.pow(d.value*10,1.1);   // increasing the distance a bit for clearer visuals
             }))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(width / 2, height / 2));
@@ -47,7 +45,7 @@ function visualise(startDate, endDate) {
             .data(graph.links)
             .enter().append("line")
             .attr("stroke-width", function (d) {
-                return d.value*2;
+                return 5/(d.value);    // the higher the distance, the thinner the line
             });
 
         var node = mainContainer.append("g").attr("class", "nodes")
@@ -71,11 +69,6 @@ function visualise(startDate, endDate) {
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
-
-        // circle.append("title")
-        //     .text(function (d) {
-        //         return d.id;
-        //     });
 
         simulation
             .nodes(graph.nodes)
@@ -116,8 +109,6 @@ function visualise(startDate, endDate) {
                 });
         }
 
-        // zoom.scaleTo(svg, 2);
-
         $('.node').each(function () {
             $(this).children('text').hide();
             $(this).on('mouseover', function () {
@@ -151,10 +142,7 @@ function visualise(startDate, endDate) {
         }
     });
 
-
-
     return true;
 }
 
-
-$('#inputs').submit(loadData);
+$('#inputs').submit(loadData)

@@ -58,7 +58,7 @@ def cluster(articles_list):
     logging.info("Document points positions:")
     logging.info(reduced_matrix)
 
-    k_clusters = 5
+    k_clusters = 2
 
     # # hierarchical clustering
     # for linkage in ('ward', 'average', 'complete'):
@@ -94,12 +94,12 @@ def cluster(articles_list):
     #         new_link = Link(articles_list[i].name, "centroid_" + str(j), distance)
     #         link_list.append(new_link)
 
-    # Plot the points
-    count = 1
-    for f1, f2 in reduced_matrix:
-        plt.scatter(f1, f2)
-        plt.annotate(count, (f1, f2))
-        count += 1
-    show()
+    # # Plot the points
+    # count = 1
+    # for f1, f2 in reduced_matrix:
+    #     plt.scatter(f1, f2)
+    #     plt.annotate(count, (f1, f2))
+    #     count += 1
+    # show()
 
     return node_list, link_list
