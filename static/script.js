@@ -7,6 +7,10 @@ function loadData() {
     var startDate = $('#startDate').val();
     var endDate = $('#endDate').val();
 
+    $('svg').empty();
+
+    $('.loading').attr("style","display: block;");
+
     visualise(startDate, endDate);
 
     return false;
@@ -22,11 +26,7 @@ function visualise(startDate, endDate) {
         var height = +window.innerHeight;
         var zoom = d3.zoom().scaleExtent([.2, 10]).on("zoom", zoomed);
 
-        var svg = d3.select("svg"),
-            width = +svg.attr("width"),
-            height = +svg.attr("height");
-
-        // var svg = d3.select("svg").attr("viewBox", "0 0 " + width + " " + height ).attr("preserveAspectRatio", "xMinYMin");
+        var svg = d3.select("svg").attr("viewBox", "0 0 " + width + " " + height ).attr("preserveAspectRatio", "xMinYMin");
         svg.call(zoom);
         var mainContainer = svg.append("g").attr("width", width).attr("height", height);
 
@@ -35,6 +35,8 @@ function visualise(startDate, endDate) {
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function (d) {
                 return d.id;
+            }).distance(function(d){
+                return Math.pow(d.value*10,1.1);   // increasing the distance a bit for clearer visuals
             }))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(width / 2, height / 2));
@@ -47,15 +49,15 @@ function visualise(startDate, endDate) {
             .data(graph.links)
             .enter().append("line")
             .attr("stroke-width", function (d) {
-                return d.value*2;
+                return 30/(d.value);    // the higher the distance, the thinner the line
             });
 
         var node = mainContainer.append("g").attr("class", "nodes")
             .selectAll("nodes").data(graph.nodes).enter().append("g").attr("class","node");
 
         var text = node.append("text")
-            .attr("dx", 10)
-            .attr("dy", ".35em")
+            .attr("dx", 20)
+            .attr("dy", "0.5em")
             .text(function (d) {
                 return d.id;
             })
@@ -63,7 +65,7 @@ function visualise(startDate, endDate) {
 
         var circle = node
             .append("circle")
-            .attr("r", 5)
+            .attr("r", 13)
             .attr("fill", function (d) {
                 return color(d.group);
             })
@@ -72,10 +74,18 @@ function visualise(startDate, endDate) {
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        // circle.append("title")
-        //     .text(function (d) {
-        //         return d.id;
-        //     });
+        $('.node').each(function () {
+            $(this).children('text').hide();
+            $(this).on('mouseover', function () {
+                console.log('mouseover!')
+                $(this).children('text').show();
+            });
+            $(this).on('mouseout', function () {
+                $(this).children('text').hide();
+            });
+        })
+
+        $('.loading').attr("style","display: none;");
 
         simulation
             .nodes(graph.nodes)
@@ -116,19 +126,6 @@ function visualise(startDate, endDate) {
                 });
         }
 
-        // zoom.scaleTo(svg, 2);
-
-        $('.node').each(function () {
-            $(this).children('text').hide();
-            $(this).on('mouseover', function () {
-                console.log('mouseover!')
-                $(this).children('text').show();
-            });
-            $(this).on('mouseout', function () {
-                $(this).children('text').hide();
-            });
-        })
-
         function zoomed() {
             mainContainer.attr("transform", d3.event.transform);
         }
@@ -151,10 +148,7 @@ function visualise(startDate, endDate) {
         }
     });
 
-
-
     return true;
 }
 
-
-$('#inputs').submit(loadData);
+$('#inputs').submit(loadData)

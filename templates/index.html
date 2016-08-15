@@ -12,14 +12,30 @@
 
     .nodes circle {
       stroke: #fff;
-      stroke-width: 1.5px;
-        z-index: 9998;
+      stroke-width: 2px;
     }
 
     .node text {
       pointer-events: none;
-      font: 10px sans-serif;
-        z-index: 9999;
+      font: 1em sans-serif;
+    }
+
+    .loading{
+        display: none;
+        margin: auto;
+        position: relative;
+        top: 25vh;
+        font: 1em sans-serif;
+        text-align: center;
+    }
+
+    div.loading{
+        margin-top: 5vh;
+    }
+
+    img.loading{
+        width: 10%;
+        height: auto;
     }
 </style>
 
@@ -35,10 +51,13 @@
 <button id="submit">Submit</button>
 </form>
 
-<svg width="960" height="600"></svg>
+<img class="loading" src="{{ url_for('static', filename='balls.svg') }}">
+<div class="loading">Retrieving articles</div>
+
+<svg></svg>
 
 <script type=text/javascript src="{{ url_for('static', filename='jquery.min.js') }}"></script>
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{{ url_for('static', filename='d3.v4.min.js') }}"></script>
 <script type=text/javascript src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
