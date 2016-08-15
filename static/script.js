@@ -43,11 +43,19 @@ function visualise(startDate, endDate) {
             .data(graph.links)
             .enter().append("line")
             .attr("stroke-width", function (d) {
-                return Math.sqrt(d.value);
+                return d.value*2;
             });
 
         var node = mainContainer.append("g").attr("class", "nodes")
             .selectAll("nodes").data(graph.nodes).enter().append("g").attr("class","node");
+
+        var text = node.append("text")
+            .attr("dx", 10)
+            .attr("dy", ".35em")
+            .text(function (d) {
+                return d.id;
+            })
+            .style("stroke", "gray");
 
         var circle = node
             .append("circle")
@@ -60,18 +68,10 @@ function visualise(startDate, endDate) {
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        circle.append("title")
-            .text(function (d) {
-                return d.id;
-            });
-
-        var text = node.append("text")
-            .attr("dx", 10)
-            .attr("dy", ".35em")
-            .text(function (d) {
-                return d.id;
-            })
-            .style("stroke", "gray");
+        // circle.append("title")
+        //     .text(function (d) {
+        //         return d.id;
+        //     });
 
         simulation
             .nodes(graph.nodes)
@@ -95,14 +95,6 @@ function visualise(startDate, endDate) {
                     return d.target.y;
                 });
 
-            d3.selectAll("circle")
-                .attr("cx", function (d) {
-                    return d.x;
-                })
-                .attr("cy", function (d) {
-                    return d.y;
-                });
-
             d3.selectAll("text")
                 .attr("x", function (d) {
                     return d.x;
@@ -110,9 +102,28 @@ function visualise(startDate, endDate) {
                 .attr("y", function (d) {
                     return d.y;
                 });
+
+            d3.selectAll("circle")
+                .attr("cx", function (d) {
+                    return d.x;
+                })
+                .attr("cy", function (d) {
+                    return d.y;
+                });
         }
 
         zoom.scaleTo(svg, 2);
+
+        $('.node').each(function () {
+            $(this).children('text').hide();
+            $(this).on('mouseover', function () {
+                console.log('mouseover!')
+                $(this).children('text').show();
+            });
+            $(this).on('mouseout', function () {
+                $(this).children('text').hide();
+            });
+        })
     });
 
     function zoomed() {

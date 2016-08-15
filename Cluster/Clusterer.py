@@ -56,7 +56,7 @@ def cluster(articles_list):
     logging.info("Document points positions:")
     logging.info(reduced_matrix)
 
-    k_clusters = 3
+    k_clusters = 5
 
     # # hierarchical clustering
     # for linkage in ('ward', 'average', 'complete'):
