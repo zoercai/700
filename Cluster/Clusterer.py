@@ -11,7 +11,7 @@ from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
 from sklearn import decomposition
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import MiniBatchKMeans, AgglomerativeClustering
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import euclidean_distances
 
@@ -32,7 +32,7 @@ def tokenize(text):
 
 
 def cluster(articles_list):
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     # Add articles into dictionary
@@ -51,25 +51,24 @@ def cluster(articles_list):
     feature_names = tfidf_vectorizer.get_feature_names()
     logging.info(feature_names)
 
-    # Reduce dimensionality to 2 for plotting
-    pca = decomposition.PCA(n_components=2)
-    reduced_matrix = pca.fit_transform(tfidf_matrix.todense())
+    final_matrix = tfidf_matrix.todense()
 
     logging.info("Document points positions:")
-    logging.info(reduced_matrix)
+    logging.info(final_matrix)
 
-    k_clusters = 2
+    k_clusters = 8
 
-    # # hierarchical clustering
-    # for linkage in ('ward', 'average', 'complete'):
-    #     clustering = AgglomerativeClustering(linkage=linkage, n_clusters=k_clusters)
-    #     print(clustering.fit_predict(reduced_matrix))
+    # hierarchical clustering
+    for linkage in ('ward', 'average', 'complete'):
+        clustering = AgglomerativeClustering(linkage=linkage, n_clusters=k_clusters)
+        logging.info("Article clusters, method: " + linkage)
+        logging.info(clustering.fit_predict(final_matrix))
 
     # k-means clustering
     clustering = MiniBatchKMeans(n_clusters=k_clusters, init='k-means++', n_init=1, verbose=0)
-    # print(clustering.fit_transform(reduced_matrix))
-    clusters = clustering.fit_predict(reduced_matrix)
-    print(clusters)
+    clusters = clustering.fit_predict(final_matrix)
+    logging.info("Article clusters, method: k-means")
+    logging.info(clusters)
 
     # Turn articles and centroids into nodes
     node_list = []
@@ -81,18 +80,43 @@ def cluster(articles_list):
         new_centroid_node = Node("centroid_" + str(i), int(i))
         node_list.append(new_centroid_node)
 
+    # Append main centroid
+    main_centroid = Node("centroid_main", k_clusters)
+    node_list.append(main_centroid)
+
+    # Calculate distances
+    def distance_normaliser(distance):
+        return int(distance * 10) + 1
+
     link_list = []
-    distance_matrix = euclidean_distances(reduced_matrix, clustering.cluster_centers_)
-    for i, row in enumerate(distance_matrix):
+
+    centroid = np.mean(clustering.cluster_centers_, axis=0)
+    inter_centroid_distance_matrix = euclidean_distances(clustering.cluster_centers_, centroid)
+
+    logging.info("inter-centroid distances")
+    logging.info(inter_centroid_distance_matrix)
+    for i, row in enumerate(inter_centroid_distance_matrix):
+        new_link = Link("centroid_main", "centroid_" + str(i), distance_normaliser(row[0]))
+        link_list.append(new_link)
+
+    intra_centroid_distance_matrix = euclidean_distances(final_matrix, clustering.cluster_centers_)
+    logging.info("Centroid vectors")
+    logging.info(clustering.cluster_centers_)
+
+    for i, row in enumerate(intra_centroid_distance_matrix):
         centroid_num = clusters[i]
-        distance = int(row[centroid_num]*10) + 1
+        distance = distance_normaliser(row[centroid_num])
         new_link = Link(articles_list[i].name, "centroid_" + str(centroid_num), distance)
         link_list.append(new_link)
 
-    # for i, row in enumerate(distance_matrix):
+    # for i, row in enumerate(intra_centroid_distance_matrix):
     #     for j, distance in enumerate(row):
     #         new_link = Link(articles_list[i].name, "centroid_" + str(j), distance)
     #         link_list.append(new_link)
+
+    # # Reduce dimensionality to 2 for plotting
+    # pca = decomposition.PCA(n_components=2)
+    # reduced_matrix = pca.fit_transform(tfidf_matrix.todense())
 
     # # Plot the points
     # count = 1
@@ -103,3 +127,4 @@ def cluster(articles_list):
     # show()
 
     return node_list, link_list
+

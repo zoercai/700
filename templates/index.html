@@ -12,14 +12,12 @@
 
     .nodes circle {
       stroke: #fff;
-      stroke-width: 1.5px;
-        z-index: 9998;
+      stroke-width: 2px;
     }
 
     .node text {
       pointer-events: none;
-      font: 10px sans-serif;
-        z-index: 9999;
+      font: 1em sans-serif;
     }
 </style>
 
@@ -38,7 +36,7 @@
 <svg></svg>
 
 <script type=text/javascript src="{{ url_for('static', filename='jquery.min.js') }}"></script>
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{{ url_for('static', filename='d3.v4.min.js') }}"></script>
 <script type=text/javascript src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>

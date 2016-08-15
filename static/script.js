@@ -45,15 +45,15 @@ function visualise(startDate, endDate) {
             .data(graph.links)
             .enter().append("line")
             .attr("stroke-width", function (d) {
-                return 5/(d.value);    // the higher the distance, the thinner the line
+                return 15/(d.value);    // the higher the distance, the thinner the line
             });
 
         var node = mainContainer.append("g").attr("class", "nodes")
             .selectAll("nodes").data(graph.nodes).enter().append("g").attr("class","node");
 
         var text = node.append("text")
-            .attr("dx", 10)
-            .attr("dy", ".35em")
+            .attr("dx", 20)
+            .attr("dy", "0.5em")
             .text(function (d) {
                 return d.id;
             })
@@ -61,7 +61,7 @@ function visualise(startDate, endDate) {
 
         var circle = node
             .append("circle")
-            .attr("r", 5)
+            .attr("r", 10)
             .attr("fill", function (d) {
                 return color(d.group);
             })
