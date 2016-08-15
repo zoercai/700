@@ -2,6 +2,8 @@
  * Created by Zoe on 13/08/16.
  */
 
+var loading;
+
 function loadData() {
     // get values
     var startDate = $('#startDate').val();
@@ -9,7 +11,24 @@ function loadData() {
 
     $('svg').empty();
 
-    $('.loading').attr("style","display: block;");
+    loading = true;
+
+    $("img.loading").attr("style","display: block;");
+
+    var msgs = $(".msg");
+    var msgIndex = -1;
+
+    function showNextMsg() {
+        if(loading==true){
+            ++msgIndex;
+            msgs.eq(msgIndex % msgs.length)
+                .fadeIn(2000)
+                .delay(2000)
+                .fadeOut(2000, showNextMsg);
+            }
+    }
+
+    showNextMsg();
 
     visualise(startDate, endDate);
 
@@ -85,6 +104,7 @@ function visualise(startDate, endDate) {
             });
         })
 
+        loading = false;
         $('.loading').attr("style","display: none;");
 
         simulation
@@ -151,4 +171,4 @@ function visualise(startDate, endDate) {
     return true;
 }
 
-$('#inputs').submit(loadData)
+$('#inputs').submit(loadData);
