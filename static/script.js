@@ -22,11 +22,11 @@ function visualise(startDate, endDate) {
         var height = +window.innerHeight;
         var zoom = d3.zoom().scaleExtent([.2, 10]).on("zoom", zoomed);
 
-        var svg = d3.select("svg"),
-            width = +svg.attr("width"),
-            height = +svg.attr("height");
+        // var svg = d3.select("svg"),
+        //     width = +svg.attr("width"),
+        //     height = +svg.attr("height");
 
-        // var svg = d3.select("svg").attr("viewBox", "0 0 " + width + " " + height ).attr("preserveAspectRatio", "xMinYMin");
+        var svg = d3.select("svg").attr("viewBox", "0 0 " + width + " " + height ).attr("preserveAspectRatio", "xMinYMin");
         svg.call(zoom);
         var mainContainer = svg.append("g").attr("width", width).attr("height", height);
 
