@@ -122,3 +122,24 @@ img.loading{
     width: 10%;
     height: auto;
 }
+
+div#sidePanel{
+    position: absolute;
+    top: 10vh;
+    right: 5vh;
+    width: 35%;
+    z-index: 10;
+    height: 80vh;
+    overflow: scroll;
+    color: rgba(0, 0, 0, 0.61);
+    font-size: 1.5vh;
+}
+
+div#sidePanel img{
+    width: 100%;
+    height: auto;
+}
+
+div#sidePanel a{
+    color: rgb(255, 127, 14);
+}

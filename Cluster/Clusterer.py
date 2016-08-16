@@ -75,15 +75,15 @@ def cluster(articles_list, clusters):
     # Turn articles and centroids into nodes
     node_list = []
     for i, item in enumerate(articles_list):
-        new_article_node = Node(item.name, int(clusters[i]))
+        new_article_node = Node(item.name, int(clusters[i]), item.bodyhtml)
         node_list.append(new_article_node)
 
     for i in range(0, k_clusters):
-        new_centroid_node = Node("centroid_" + str(i), int(i))
+        new_centroid_node = Node("centroid_" + str(i), int(i), 'centroid')
         node_list.append(new_centroid_node)
 
     # Append main centroid
-    main_centroid = Node("centroid_main", k_clusters)
+    main_centroid = Node("centroid_main", k_clusters, 'centroid')
     node_list.append(main_centroid)
 
     # Calculate distances

@@ -40,7 +40,7 @@ def retrieve_articles(results, from_date, to_date):
         url = item['webUrl']
         body = item['blocks']['body']
         if len(body) > 0:
-            new_article = Article(name, url, body[0]['bodyTextSummary'])
+            new_article = Article(name, url, body[0]['bodyTextSummary'], body[0]['bodyHtml'])
             articles.append(new_article)
 
     return articles

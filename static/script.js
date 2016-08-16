@@ -50,6 +50,11 @@ function visualise(results, startDate, endDate, clusters) {
     // json_source = $SCRIPT_ROOT + '/static/output.json'
 
     d3.json(json_source, function (error, graph) {
+
+        $('body').append('<div id="sidePanel"></div>');
+        $('#sidePanel').append('<div id="title"></div>');
+        $('#sidePanel').append('<div id="content"></div>');
+
         var width = +window.innerWidth;
         var height = +window.innerHeight;
         var zoom = d3.zoom().scaleExtent([.2, 10]).on("zoom", zoomed);
@@ -100,12 +105,15 @@ function visualise(results, startDate, endDate, clusters) {
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
-                .on("end", dragended));
+                .on("end", dragended))
+            .on('click', function(d) {
+                $('#title').html("<h1>" + d.id + "</h1>");
+                $('#content').html(d.bodyhtml);
+            });
 
         $('.node').each(function () {
             $(this).children('text').hide();
             $(this).on('mouseover', function () {
-                console.log('mouseover!')
                 $(this).children('text').show();
             });
             $(this).on('mouseout', function () {
