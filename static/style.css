@@ -132,7 +132,7 @@ div#sidePanel{
     height: 80vh;
     overflow: scroll;
     color: rgba(0, 0, 0, 0.61);
-    font-size: 1.7vh;
+    font-size: 2vh;
 }
 
 div#sidePanel img{
