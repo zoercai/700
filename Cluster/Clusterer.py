@@ -86,6 +86,8 @@ def cluster(articles_list, no_of_clusters):
     clusters = clustering.fit_predict(final_matrix)
     logging.info("Article clusters, method: k-means")
     logging.info(clusters)
+    logging.info("silhouette_score: ")
+    logging.info(metrics.silhouette_score(final_matrix, clustering.labels_))
 
     # # DBSCAN clustering
     # clustering = DBSCAN(eps=0.0000000000000000000000001, min_samples=2)
