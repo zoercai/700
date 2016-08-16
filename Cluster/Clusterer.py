@@ -81,12 +81,22 @@ def cluster(articles_list, no_of_clusters):
     # logging.info("Article clusters, method: " + linkage)
     # logging.info(clusters)
 
-    # k-means clustering
-    clustering = MiniBatchKMeans(n_clusters=k_clusters, init='k-means++', n_init=1, verbose=0)
+    # x-means clustering
+    silhouette_scores = [0.0, 0.0]
+    for i in range(2, no_of_clusters+1):
+        clustering = MiniBatchKMeans(n_clusters=i, init='k-means++', n_init=1, verbose=0)
+        clusters = clustering.fit_predict(final_matrix)
+        logging.info("Article clusters, method: k-means")
+        # logging.info(clusters)
+        logging.info("silhouette_score for %d clusters: " % i)
+        silhouette_score = metrics.silhouette_score(final_matrix, clustering.labels_)
+        logging.info(silhouette_score)
+        silhouette_scores.append(silhouette_score)
+    # Get index of max (k-means)
+    best_cluster_number = silhouette_scores.index(max(silhouette_scores))
+    clustering = MiniBatchKMeans(n_clusters=best_cluster_number, init='k-means++', n_init=1, verbose=0)
     clusters = clustering.fit_predict(final_matrix)
-    logging.info("Article clusters, method: k-means")
-    logging.info(clusters)
-    logging.info("silhouette_score: ")
+    logging.info("Final silhouette score for %d clusters: " % best_cluster_number)
     logging.info(metrics.silhouette_score(final_matrix, clustering.labels_))
 
     # # DBSCAN clustering
@@ -107,7 +117,10 @@ def cluster(articles_list, no_of_clusters):
         node_list.append(new_article_node)
 
     for i, centroid_vector in enumerate(clustering.cluster_centers_):
-        top_features = sorted(zip(centroid_vector, feature_names), reverse=True)
+        order_centroids = clustering.cluster_centers_.argsort()[:, ::-1]
+        top_features = []
+        for ind in order_centroids[i, :10]:
+            top_features.append(str(feature_names[ind]) + ": " + str(clustering.cluster_centers_[i, ind]))
         new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features))
         node_list.append(new_centroid_node)
 
@@ -134,6 +147,8 @@ def cluster(articles_list, no_of_clusters):
     logging.info("Centroid vectors")
     logging.info(clustering.cluster_centers_)
 
+    print(clusters)
+    print([article.name for article in articles_list])
     for i, row in enumerate(intra_centroid_distance_matrix):
         centroid_num = clusters[i]
         distance = distance_normaliser(row[centroid_num])
