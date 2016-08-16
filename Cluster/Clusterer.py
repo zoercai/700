@@ -31,7 +31,7 @@ def tokenize(text):
     return lemmatized_tokens
 
 
-def cluster(articles_list):
+def cluster(articles_list, clusters):
     warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
@@ -56,7 +56,9 @@ def cluster(articles_list):
     logging.info("Document points positions:")
     logging.info(final_matrix)
 
-    k_clusters = 8
+    # k_clusters = 2
+    # if clusters != '':
+    k_clusters = clusters
 
     # hierarchical clustering
     for linkage in ('ward', 'average', 'complete'):

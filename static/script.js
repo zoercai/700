@@ -2,14 +2,23 @@
  * Created by Zoe on 13/08/16.
  */
 
+$('.datepicker-here').datepicker({
+	maxDate: new Date(),
+    dateFormat: "yyyy-mm-dd"
+})
+
 var loading;
 
 function loadData() {
     // get values
+    var results = $('#results').val();
     var startDate = $('#startDate').val();
     var endDate = $('#endDate').val();
+    var clusters = $('#clusters').val();
 
-    $('svg').empty();
+    $('form').attr("style","display:none");
+
+    $('body').prepend("<svg></svg>");
 
     loading = true;
 
@@ -30,13 +39,13 @@ function loadData() {
 
     showNextMsg();
 
-    visualise(startDate, endDate);
+    visualise(results, startDate, endDate, clusters);
 
     return false;
 };
 
-function visualise(startDate, endDate) {
-    var json_source = $SCRIPT_ROOT + '/cluster?start_date=' + startDate + '&end_date=' + endDate
+function visualise(results, startDate, endDate, clusters) {
+    var json_source = $SCRIPT_ROOT + '/cluster?results=' + results + '&start_date=' + startDate + '&end_date=' + endDate + '&clusters=' + clusters
     // var json_source = $SCRIPT_ROOT + '/static/miserables.json'
     // json_source = $SCRIPT_ROOT + '/static/output.json'
 

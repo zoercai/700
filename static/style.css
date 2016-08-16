@@ -1,5 +1,85 @@
 body{
     background-repeat: repeat;
+    font: 1em sans-serif;
+}
+
+form{
+    width: 50%;
+	margin: 0.3em auto 0 auto;
+	font-size: 4em;
+	line-height: 1.5;
+    position: relative;
+    top: 45vh;
+    transform: translateY(-50%);
+}
+
+input{
+    border: none;
+	background: transparent;
+	font-family: inherit;
+	font-size: inherit;
+	color: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+    text-align: center;
+
+	/*color: #b14943;*/
+	cursor: pointer;
+	border-bottom: 1px dashed #555555;
+}
+
+input:focus {
+	outline: none;
+}
+
+/* custom placeholder color */
+input::-webkit-input-placeholder {
+	color: rgba(0,0,0,0.8);
+}
+
+input:active::-webkit-input-placeholder ,
+input:focus::-webkit-input-placeholder {
+	color: rgba(0,0,0,0.2);
+}
+
+input::-moz-placeholder {
+	color: rgba(0,0,0,0.8);
+}
+
+input:active::-moz-placeholder,
+input:focus::-moz-placeholder {
+	color: rgba(0,0,0,0.2);
+}
+
+input:-ms-input-placeholder {
+	color: rgba(0,0,0,0.8);
+}
+
+input:active::-ms-input-placeholder ,
+input:focus::-ms-input-placeholder {
+	color: rgba(0,0,0,0.2);
+}
+
+button#submit{
+    font-size: 0.8em;
+    padding: 0.1em 0.8em;
+    display: block;
+    margin-top: 1em;
+    border-width: 0;
+    outline: none;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+    background-color: #4ec9e6;
+    color: #ecf0f1;
+    transition: background-color .3s;
+    cursor: pointer;
+}
+
+button#submit:hover, button#submit:focus {
+    background-color: #43bad6;
 }
 
 .links line {
@@ -14,20 +94,28 @@ body{
 
 .node text {
   pointer-events: none;
-  font: 1em sans-serif;
+  /*font: 1em sans-serif;*/
+}
+
+#loader{
+    width: 100%;
+    position: absolute;
+    top: 50vh;
+    transform: translateY(-50%);
 }
 
 .loading{
     display: none;
     margin: auto;
-    position: relative;
-    top: 25vh;
-    font: 1em sans-serif;
+    /*position: relative;*/
+    /*top: 25vh;*/
+    /*font: 1em sans-serif;*/
     text-align: center;
 }
 
 div.loading{
-    margin-top: 5vh;
+    font-size: 1em;
+    margin-top: 1.5em;
 }
 
 img.loading{

@@ -13,14 +13,16 @@ def index():
 
 @app.route('/cluster')
 def clusterer():
-    start_date = request.args.get('start_date', 0, type=int)
-    end_date = request.args.get('end_date', 0, type=int)
+    results = request.args.get('results')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    clusters = request.args.get('clusters', 2, type=int)
 
     # retrieve articles
-    articles_list = retrieve_articles(start_date, end_date)
+    articles_list = retrieve_articles(results, start_date, end_date)
 
     # process articles
-    node_list, link_list = cluster(articles_list)
+    node_list, link_list = cluster(articles_list, clusters)
 
     # format & jsonify
     json_nodelist = json.dumps([ob.__dict__ for ob in node_list])
