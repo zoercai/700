@@ -25,15 +25,16 @@ def tokenize(text):
     # Turns words into their bases
     lemmatizer = WordNetLemmatizer()
     post_to_lem = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r'}
-    lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]])
-                         for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
-    logging.debug(lemmatized_tokens)
+    # post_to_lem = {'JJ': 'a'}
+    lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]]) for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
+    # lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:3]]) for i, j in pos_tag(filtered_tokens) if j[:3] in post_to_lem]
+    # logging.debug(lemmatized_tokens)
     return lemmatized_tokens
 
 
 def cluster(articles_list, clusters):
     warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
-    logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+    logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
     # Add articles into dictionary
     token_dict = {}
@@ -43,7 +44,7 @@ def cluster(articles_list, clusters):
         logging.info(headline)
 
     # Convert the tokens into matrix of tfidf values
-    max_features = 10
+    max_features = clusters * 4
     tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features)
     tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
 
@@ -78,8 +79,9 @@ def cluster(articles_list, clusters):
         new_article_node = Node(item.name, int(clusters[i]), item.bodyhtml)
         node_list.append(new_article_node)
 
-    for i in range(0, k_clusters):
-        new_centroid_node = Node("centroid_" + str(i), int(i), 'centroid')
+    for i, centroid_vector in enumerate(clustering.cluster_centers_):
+        top_features = sorted(zip(centroid_vector, feature_names), reverse=True)
+        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features))
         node_list.append(new_centroid_node)
 
     # Append main centroid
