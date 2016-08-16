@@ -25,9 +25,10 @@ def tokenize(text):
     # Turns words into their bases
     lemmatizer = WordNetLemmatizer()
     post_to_lem = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r'}
-    lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]])
-                         for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
-    logging.debug(lemmatized_tokens)
+    # post_to_lem = {'JJ': 'a'}
+    lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]]) for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
+    # lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:3]]) for i, j in pos_tag(filtered_tokens) if j[:3] in post_to_lem]
+    # logging.debug(lemmatized_tokens)
     return lemmatized_tokens
 
 
@@ -43,7 +44,7 @@ def cluster(articles_list, clusters):
         logging.info(headline)
 
     # Convert the tokens into matrix of tfidf values
-    max_features = clusters * 2
+    max_features = clusters * 4
     tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features)
     tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
 
