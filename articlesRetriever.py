@@ -7,15 +7,17 @@ from urllib.request import urlopen
 from Article import Article
 
 
-def retrieve_articles(from_date=None, to_date=None):
+def retrieve_articles(results, from_date, to_date):
     api_key = 'aaa8ed1a-d2e0-42f4-9437-11e77e48244b'
 
-    results = 50
+    # results = 50
     query = ''   # Optional, only used for testing
 
-    if from_date is 0:
+    if results == '':
+        results = '50'
+    if from_date == '':
         from_date = '2016-07-10'
-    if to_date is 0:
+    if to_date == '':
         to_date = '2016-08-10'
 
     url = 'http://content.guardianapis.com/search?q=' + query

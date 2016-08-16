@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Newspaper Clustering</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link href="{{ url_for('static', filename='datepicker.min.css') }}" rel="stylesheet" type="text/css">
 </head>
 
 <body style="background:url({{ url_for('static', filename='bg.png') }});">
@@ -13,21 +14,27 @@
 </script>
 
 <form id='inputs' class="inputs">
-<label for="startDate">Start Date: </label> <input type='text' size='30' id='startDate'>
-<label for="endDate">End Date: </label> <input type='text' size='30' id='endDate'>
-<button id="submit">Submit</button>
+    Let's group<br/>
+    <input type='text' size='2' id='results' placeholder="50"> newspaper articles
+    <br/>from <input type='text' size='10' id='startDate' class="datepicker-here" data-language='en' placeholder="2016-07-10">
+    <br/>to <input type='text' size='10' id='endDate' class="datepicker-here" data-language='en' placeholder="2016-08-10">
+    <br/>into <input type='text' size='2' id='clusters' placeholder="2"> clusters
+    <button id="submit">Group!</button>
 </form>
 
-<img class="loading" src="{{ url_for('static', filename='balls.svg') }}">
-<div class="loading msg">Cutting out newspaper articles</div>
-<div class="loading msg">Arranging articles</div>
-<div class="loading msg">Making newspaper hats</div>
-<div class="loading msg">Clustering articles</div>
-<div class="loading msg">Gluing articles together</div>
+<div id="loader">
+    <img class="loading" src="{{ url_for('static', filename='balls.svg') }}">
+    <div class="loading msg">Cutting out newspaper articles</div>
+    <div class="loading msg">Arranging articles</div>
+    <div class="loading msg">Making newspaper hats</div>
+    <div class="loading msg">Clustering articles</div>
+    <div class="loading msg">Gluing articles together</div>
+</div>
 
-<svg></svg>
 
 <script type=text/javascript src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datepicker.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datepicker.en.js') }}"></script>
 <script src="{{ url_for('static', filename='d3.v4.min.js') }}"></script>
 <script type=text/javascript src="{{ url_for('static', filename='script.js') }}"></script>
 
