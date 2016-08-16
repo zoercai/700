@@ -43,7 +43,7 @@ def cluster(articles_list, clusters):
         logging.info(headline)
 
     # Convert the tokens into matrix of tfidf values
-    max_features = clusters
+    max_features = clusters * 2
     tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features)
     tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
 
