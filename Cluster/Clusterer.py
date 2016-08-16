@@ -33,7 +33,7 @@ def tokenize(text):
 
 def cluster(articles_list, clusters):
     warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
-    logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+    logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
     # Add articles into dictionary
     token_dict = {}
@@ -43,7 +43,7 @@ def cluster(articles_list, clusters):
         logging.info(headline)
 
     # Convert the tokens into matrix of tfidf values
-    max_features = 10
+    max_features = clusters
     tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features)
     tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
 
@@ -78,8 +78,9 @@ def cluster(articles_list, clusters):
         new_article_node = Node(item.name, int(clusters[i]), item.bodyhtml)
         node_list.append(new_article_node)
 
-    for i in range(0, k_clusters):
-        new_centroid_node = Node("centroid_" + str(i), int(i), 'centroid')
+    for i, centroid_vector in enumerate(clustering.cluster_centers_):
+        top_features = sorted(zip(centroid_vector, feature_names), reverse=True)
+        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features))
         node_list.append(new_centroid_node)
 
     # Append main centroid
