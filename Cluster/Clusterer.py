@@ -33,7 +33,7 @@ def tokenize(text):
 
 def cluster(articles_list, clusters):
     warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
-    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+    logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 
     # Add articles into dictionary
     token_dict = {}

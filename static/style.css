@@ -135,7 +135,7 @@ div#sidePanel{
     font-size: 2vh;
 }
 
-div#sidePanel img{
+div#sidePanel img, div#sidePanel video{
     width: 100%;
     height: auto;
 }
