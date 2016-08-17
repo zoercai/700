@@ -4,7 +4,8 @@
 import codecs
 import json
 from urllib.request import urlopen
-from Article import Article
+
+from Application.Article import Article
 
 
 def retrieve_articles(results, from_date, to_date):
