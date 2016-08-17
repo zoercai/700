@@ -1,7 +1,6 @@
 import logging
 import sys
 import warnings
-
 import numpy as np
 from Cluster.Node import Node
 from nltk import pos_tag
@@ -12,8 +11,7 @@ from sklearn import metrics
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import euclidean_distances
-
-from Application.Cluster.Link import Link
+from Cluster.Link import Link
 
 
 def tokenize(text):
