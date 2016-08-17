@@ -82,6 +82,9 @@ $RECYCLE.BIN/
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 
+# Added by Zoe
+**/.idea/
+
 # Gradle:
 .idea/gradle.xml
 .idea/libraries
