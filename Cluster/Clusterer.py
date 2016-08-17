@@ -210,4 +210,3 @@ def cluster(articles_list, no_of_clusters):
     # show()
 
     return node_list, link_list
-
