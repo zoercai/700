@@ -7,15 +7,10 @@ import time
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn import cluster
 from sklearn import decomposition
 from sklearn.cluster import MiniBatchKMeans, KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import silhouette_samples
-from sklearn.datasets import make_blobs
-
-
-from sklearn.cluster import AffinityPropagation
 
 from nltk import word_tokenize, pos_tag
 from nltk.tokenize import RegexpTokenizer
@@ -87,9 +82,6 @@ top_feature_matrix = ordered_matrix[0:, (ncol-number_of_features-1):(ncol-1)]
 # print(top_feature_matrix)
 # print(tfidf_matrix.shape)
 
-print("TOP FEATURE MATRIX: ")
-print(top_feature_matrix)
-
 # Get tokens values (TODO not correct after extracting top features)
 # feature_names = tfidf_vectorizer.get_feature_names()
 # print(feature_names)
@@ -112,36 +104,13 @@ print("MEAN SIMILARITY: ")
 print(mean_similarity)
 print("//")
 
-X, y = make_blobs(n_samples=500,
-                  n_features=2,
-                  centers=4,
-                  cluster_std=1,
-                  center_box=(-10.0, 10.0),
-                  shuffle=True,
-                  random_state=1)  # For reproducibility
 
-# Finding the centroid similarities that are greater than the mean similarity
-for similarity in centroid_similarities[0]:
-    print("DIFFERENCE")
-    print(similarity - mean_similarity)
-    # if similarity > mean_similarity:
-    #     print(similarity)
-
-# similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
-# print("Similarities to first: ")
-# print(similarities)
 
 # PCA decomposes the 20 dimension vector into a 2 dimension vector
 pca = decomposition.PCA(n_components=2)
 top_feature_matrix = pca.fit_transform(top_feature_matrix)
 print("Decomposed Matrix: ")
 print(top_feature_matrix)
-
-# for f1, f2 in top_feature_matrix:
-#     plt.scatter( f1, f2 )
-# plt.show()
-
-
 
 k_means = KMeans(init='k-means++', n_clusters=3, n_init=10)
 t0 = time.time()
@@ -157,6 +126,7 @@ fig = plt2.figure(figsize=(8, 3))
 fig.subplots_adjust(left=0.02, right=0.98, bottom=0.05, top=0.9)
 colors = ['#4EACC5', '#FF9C34', '#4E9A06']
 
+print("SILHOUETTE VALUES:")
 print(silhouette_samples(top_feature_matrix, k_means_labels))
 
 ax = fig.add_subplot(1, 3, 1)
