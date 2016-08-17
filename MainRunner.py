@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import string
 import os
 import numpy
@@ -11,52 +12,58 @@ from sklearn import decomposition
 from sklearn.cluster import MiniBatchKMeans, KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import silhouette_samples
+=======
+import json
+from flask import Flask, render_template, request, Response
+from ArticlesRetriever import retrieve_articles
+from Cluster.Clusterer import cluster
 
-from nltk import word_tokenize, pos_tag
-from nltk.tokenize import RegexpTokenizer
-from nltk.corpus import stopwords
-from nltk.stem.wordnet import WordNetLemmatizer
+app = Flask(__name__)
+>>>>>>> master
 
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+<<<<<<< HEAD
 
 
 def tokenize(text):
     tokenizer = RegexpTokenizer(r'\w+')
     tokens = tokenizer.tokenize(text)
     tokens = [token.lower() for token in tokens]
+=======
+>>>>>>> master
 
-    filtered_tokens = [word for word in tokens if ((word not in stopwords.words('english')))]
+@app.route('/cluster')
+def clusterer():
+    results = request.args.get('results')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    clusters = request.args.get('clusters', 20, type=int)
 
-    # for word, tag in pos_tag(filtered_tokens):
-    #     if tag == 'NN' or tag == 'NNS' or tag == 'NNP' or tag == 'NNPS':
-    #         print(word)
-    #         print(tag)
+    # retrieve articles
+    articles_list = retrieve_articles(results, start_date, end_date)
 
-    filtered_tokens = [word for word, tag in pos_tag(filtered_tokens) if tag == 'NN' or tag == 'NNS' or tag == 'NNP' or tag == 'NNPS']
-    # print(filtered_tokens)
+    # process articles
+    node_list, link_list = cluster(articles_list, clusters)
 
-    lemmatizer = WordNetLemmatizer()
-    lemmatized_tokens = [
-        lemmatizer.lemmatize(i, j[0].lower()) if j[0].lower() in ['a', 'n', 'v'] else lemmatizer.lemmatize(i) for i, j
-        in
-        pos_tag(filtered_tokens)]
-    # print(filtered_tokens)
-    return lemmatized_tokens
+    # format & jsonify
+    json_nodelist = json.dumps([ob.__dict__ for ob in node_list])
+    json_linklist = json.dumps([ob.__dict__ for ob in link_list])
+    final = '{"nodes":' + json_nodelist + ', "links":' + json_linklist + '}'
+
+    # print(final)
+
+    resp = Response(response=final,
+                    status=200,
+                    mimetype="application/json")
+
+    return resp
 
 
-token_dict = {}
-
-# Read in all test files
-for subdir, dirs, files in os.walk(os.getcwd()+"/tests1"):
-    for file in files:
-        if file.endswith(".txt"):
-            file_path = subdir + os.path.sep + file
-            document = open(file_path, 'r')
-            text = document.read()
-            token_dict[file] = text
-
-print(token_dict.keys())
-
+<<<<<<< HEAD
 # Create tokenizer
 tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english')
 # tfidf_vectorizer = TfidfVectorizer()
@@ -145,3 +152,7 @@ plt2.show()
 
 
 
+=======
+if __name__ == '__main__':
+    app.run()
+>>>>>>> master

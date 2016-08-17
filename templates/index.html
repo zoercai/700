@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Newspaper Clustering</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link href="{{ url_for('static', filename='datepicker.min.css') }}" rel="stylesheet" type="text/css">
+</head>
+
+<body style="background:url({{ url_for('static', filename='bg.png') }});">
+
+<script type="text/javascript">
+  var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+<form id='inputs' class="inputs">
+    Let's group<br/>
+    <input type='text' size='3' id='results' placeholder="100"> newspaper articles
+    <br/>from <input type='text' size='10' id='startDate' class="datepicker-here" data-language='en' placeholder="2016-07-10">
+    <br/>to <input type='text' size='10' id='endDate' class="datepicker-here" data-language='en' placeholder="2016-08-10">
+    <br/>into <input type='text' size='2' id='clusters' placeholder="20"> clusters
+    <button id="submit">Group!</button>
+</form>
+
+<div id="loader">
+    <img class="loading" src="{{ url_for('static', filename='balls.svg') }}">
+    <div class="loading msg">Cutting out newspaper articles</div>
+    <div class="loading msg">Arranging articles</div>
+    <div class="loading msg">Making hats out of newspapers</div>
+    <div class="loading msg">Clustering articles</div>
+    <div class="loading msg">Gluing articles together</div>
+</div>
+
+
+<script type=text/javascript src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datepicker.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datepicker.en.js') }}"></script>
+<script src="{{ url_for('static', filename='d3.v4.min.js') }}"></script>
+<script type=text/javascript src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
