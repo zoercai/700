@@ -14,7 +14,7 @@ def retrieve_articles(results, from_date, to_date):
     query = ''   # Optional, only used for testing
 
     if results == '':
-        results = '50'
+        results = '100'
     if from_date == '':
         from_date = '2016-07-10'
     if to_date == '':
@@ -39,8 +39,16 @@ def retrieve_articles(results, from_date, to_date):
         name = item['webTitle']
         url = item['webUrl']
         body = item['blocks']['body']
-        if len(body) > 0:
+        if len(body) == 1:
             new_article = Article(name, url, body[0]['bodyTextSummary'], body[0]['bodyHtml'])
+            articles.append(new_article)
+        if len(body) > 1:
+            bodyText = ''
+            bodyHtml = ''
+            for i in range(0, len(body)):
+                bodyText += '\n' + body[i]['bodyTextSummary']
+                bodyHtml += '<br/><br/>' + body[i]['bodyHtml']
+            new_article = Article(name, url, bodyText, bodyHtml)
             articles.append(new_article)
 
     return articles
