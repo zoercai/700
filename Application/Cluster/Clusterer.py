@@ -25,15 +25,14 @@ def tokenize(text):
 
     filtered_tokens = [word for word in tokens if (word not in stopwords.words('english'))]  # Filters out stopwords
 
-    parent_folder = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    tagger = os.path.join(parent_folder, 'stanford-ner.jar')
-    type = os.path.join(parent_folder, 'english.conll.4class.distsim.crf.ser.gz')
-    st = StanfordNERTagger(type, tagger)
-    tokens = st.tag(filtered_tokens)
-    ne = [token for token, tag in tokens if tag != 'O']
-    # print(ne)
-
-    return ne
+    # parent_folder = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    # tagger = os.path.join(parent_folder, 'stanford-ner.jar')
+    # type = os.path.join(parent_folder, 'english.conll.4class.distsim.crf.ser.gz')
+    # st = StanfordNERTagger(type, tagger)
+    # tokens = st.tag(filtered_tokens)
+    # ne = [token for token, tag in tokens if tag != 'O']
+    # # print(ne)
+    # return ne
 
     # Turns words into their bases
     lemmatizer = WordNetLemmatizer()
@@ -64,7 +63,7 @@ def cluster(articles_list, no_of_clusters):
 
     articles_content = [article.body for article in articles_list]
 
-    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=None, lowercase=False)
+    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features, lowercase=False)
     tfidf_matrix = tfidf_vectorizer.fit_transform(articles_content)
 
     # tf_vectorizer = CountVectorizer(tokenizer=tokenize, stop_words='english', max_features=None, lowercase=False)
@@ -131,8 +130,7 @@ def cluster(articles_list, no_of_clusters):
     final_list = final_matrix.tolist()
     for i, item in enumerate(articles_content):
         features = zip(feature_names, final_list[i])
-        sorted_features = sorted(features, key=lambda x: x[1])
-        print(articles_list[i].bodyhtml)
+        sorted_features = sorted(features, key=lambda x: x[1], reverse=True)
         new_article_node = Node(articles_list[i].name, int(clusters[i]), ",".join("(%s,%s)" % tup for tup in sorted_features), articles_list[i].bodyhtml)
         node_list.append(new_article_node)
 
