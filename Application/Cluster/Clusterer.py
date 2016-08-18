@@ -1,25 +1,17 @@
 import logging
-import warnings
 import sys
+import warnings
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import show, scatter, annotate
 from Cluster.Node import Node
-from Cluster.Link import Link
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
-from sklearn import decomposition
 from sklearn import metrics
-from sklearn.cluster import MiniBatchKMeans, AgglomerativeClustering, DBSCAN
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_extraction.text import HashingVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics.pairwise import euclidean_distances
-from sklearn.decomposition import TruncatedSVD
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import Normalizer
+from Cluster.Link import Link
 
 
 def tokenize(text):
