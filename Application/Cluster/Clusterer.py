@@ -52,16 +52,20 @@ def cluster(articles_list, no_of_clusters):
 
     # Add articles into dictionary
     token_dict = {}
+    article_content_dict = {}
     for article in articles_list:
         token_dict[article.name] = article.body
+        article_content_dict[article.name] = article.bodyhtml
     for headline in token_dict.keys():
         logging.info(headline)
 
     # Convert the tokens into matrix of tfidf values
     max_features = no_of_clusters * 4
 
-    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features, lowercase=False)
-    tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
+    articles_content = [article.body for article in articles_list]
+
+    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=None, lowercase=False)
+    tfidf_matrix = tfidf_vectorizer.fit_transform(articles_content)
 
     # tf_vectorizer = CountVectorizer(tokenizer=tokenize, stop_words='english', max_features=None, lowercase=False)
     # tfidf_matrix = tf_vectorizer.fit_transform(token_dict.values())
@@ -125,10 +129,11 @@ def cluster(articles_list, no_of_clusters):
     # Turn articles and centroids into nodes
     node_list = []
     final_list = final_matrix.tolist()
-    for i, item in enumerate(articles_list):
+    for i, item in enumerate(articles_content):
         features = zip(feature_names, final_list[i])
         sorted_features = sorted(features, key=lambda x: x[1])
-        new_article_node = Node(item.name, int(clusters[i]), ",".join("(%s,%s)" % tup for tup in sorted_features), item.bodyhtml)
+        print(articles_list[i].bodyhtml)
+        new_article_node = Node(articles_list[i].name, int(clusters[i]), ",".join("(%s,%s)" % tup for tup in sorted_features), articles_list[i].bodyhtml)
         node_list.append(new_article_node)
 
     for i, centroid_vector in enumerate(clustering.cluster_centers_):
@@ -136,7 +141,7 @@ def cluster(articles_list, no_of_clusters):
         top_features = []
         for ind in order_centroids[i, :10]:
             top_features.append(str(feature_names[ind]) + ": " + str(clustering.cluster_centers_[i, ind]))
-        new_centroid_node = Node("centroid_" + str(i), int(i),str(top_features), str(top_features))
+        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features), str(top_features))
         node_list.append(new_centroid_node)
 
     # Append main centroid
