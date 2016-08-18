@@ -19,7 +19,6 @@ from sklearn.metrics.pairwise import euclidean_distances
 from Cluster.Link import Link
 
 
-
 def tokenize(text):
     tokenizer = RegexpTokenizer(r'\w+')  # Reads all words and drops everything else
     tokens = tokenizer.tokenize(text)
@@ -125,8 +124,11 @@ def cluster(articles_list, no_of_clusters):
 
     # Turn articles and centroids into nodes
     node_list = []
+    final_list = final_matrix.tolist()
     for i, item in enumerate(articles_list):
-        new_article_node = Node(item.name, int(clusters[i]), item.bodyhtml)
+        features = zip(feature_names, final_list[i])
+        sorted_features = sorted(features, key=lambda x: x[1])
+        new_article_node = Node(item.name, int(clusters[i]), ",".join("(%s,%s)" % tup for tup in sorted_features), item.bodyhtml)
         node_list.append(new_article_node)
 
     for i, centroid_vector in enumerate(clustering.cluster_centers_):
@@ -134,11 +136,11 @@ def cluster(articles_list, no_of_clusters):
         top_features = []
         for ind in order_centroids[i, :10]:
             top_features.append(str(feature_names[ind]) + ": " + str(clustering.cluster_centers_[i, ind]))
-        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features))
+        new_centroid_node = Node("centroid_" + str(i), int(i),str(top_features), str(top_features))
         node_list.append(new_centroid_node)
 
     # Append main centroid
-    main_centroid = Node("centroid_main", k_clusters, 'centroid')
+    main_centroid = Node("centroid_main", k_clusters, tfidf_vectorizer.get_feature_names(), 'centroid')
     node_list.append(main_centroid)
 
     # Calculate distances
@@ -161,7 +163,7 @@ def cluster(articles_list, no_of_clusters):
     logging.info(clustering.cluster_centers_)
 
     print(clusters)
-    print([article.name for article in articles_list])
+    print([article.name for article in articles_list], sep='\n')
     for i, row in enumerate(intra_centroid_distance_matrix):
         centroid_num = clusters[i]
         distance = distance_normaliser(row[centroid_num])
@@ -183,13 +185,13 @@ def cluster(articles_list, no_of_clusters):
     # # PCA
     # pca = decomposition.PCA(n_components=2)
     # reduced_matrix = pca.fit_transform(final_matrix)
-
-    # # LSA
-    # svd = TruncatedSVD(2)
-    # normalizer = Normalizer(copy=False)
-    # lsa = make_pipeline(svd, normalizer)
-    # reduced_matrix = lsa.fit_transform(final_matrix)
-
+    #
+    # # # LSA
+    # # svd = TruncatedSVD(2)
+    # # normalizer = Normalizer(copy=False)
+    # # lsa = make_pipeline(svd, normalizer)
+    # # reduced_matrix = lsa.fit_transform(final_matrix)
+    #
     # # Visualize the clustering
     # def plot_clustering(reduced_matrix, labels, title=None):
     #     plt.figure()
