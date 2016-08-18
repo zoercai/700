@@ -2,16 +2,22 @@ import logging
 import sys
 import warnings
 import numpy as np
+import os
 from Cluster.Node import Node
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import show, scatter, annotate
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
+from nltk import StanfordNERTagger
 from sklearn import metrics
+from sklearn import decomposition
 from sklearn.cluster import MiniBatchKMeans
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import euclidean_distances
 from Cluster.Link import Link
+
 
 
 def tokenize(text):
@@ -20,6 +26,16 @@ def tokenize(text):
 
     filtered_tokens = [word for word in tokens if (word not in stopwords.words('english'))]  # Filters out stopwords
 
+    parent_folder = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    tagger = os.path.join(parent_folder, 'stanford-ner.jar')
+    type = os.path.join(parent_folder, 'english.conll.4class.distsim.crf.ser.gz')
+    st = StanfordNERTagger(type, tagger)
+    tokens = st.tag(filtered_tokens)
+    ne = [token for token, tag in tokens if tag != 'O']
+    # print(ne)
+
+    return ne
+
     # Turns words into their bases
     lemmatizer = WordNetLemmatizer()
     post_to_lem = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r'}
@@ -27,6 +43,7 @@ def tokenize(text):
     lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]]) for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
     # lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:3]]) for i, j in pos_tag(filtered_tokens) if j[:3] in post_to_lem]
     # logging.debug(lemmatized_tokens)
+
     return lemmatized_tokens
 
 
@@ -44,11 +61,15 @@ def cluster(articles_list, no_of_clusters):
     # Convert the tokens into matrix of tfidf values
     max_features = no_of_clusters * 4
 
-    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features)
+    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features, lowercase=False)
     tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
+
+    # tf_vectorizer = CountVectorizer(tokenizer=tokenize, stop_words='english', max_features=None, lowercase=False)
+    # tfidf_matrix = tf_vectorizer.fit_transform(token_dict.values())
 
     # Get feature names
     feature_names = tfidf_vectorizer.get_feature_names()
+    # feature_names = tf_vectorizer.get_feature_names()
     logging.info(feature_names)
 
     # # Convert using hashing vectorizer instead
@@ -192,7 +213,7 @@ def cluster(articles_list, no_of_clusters):
     # print(reduced_matrix)
     # plot_clustering(reduced_matrix, clustering.labels_)
     # show()
-
+    #
     # # Plot the points
     # count = 1
     # for f1, f2 in reduced_matrix:
