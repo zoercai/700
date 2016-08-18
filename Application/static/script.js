@@ -53,6 +53,7 @@ function visualise(results, startDate, endDate, clusters) {
 
         $('body').append('<div id="sidePanel"></div>');
         $('#sidePanel').append('<div id="title"></div>');
+        $('#sidePanel').append('<div id="features"></div>');
         $('#sidePanel').append('<div id="content"></div>');
 
         var width = +window.innerWidth;
@@ -108,6 +109,7 @@ function visualise(results, startDate, endDate, clusters) {
                 .on("end", dragended))
             .on('click', function(d) {
                 $('#title').html("<h1>" + d.id + "</h1>");
+                $('#features').html(d.features);
                 $('#content').html(d.bodyhtml);
             });
 
