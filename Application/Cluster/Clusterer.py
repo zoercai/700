@@ -1,22 +1,21 @@
+from __future__ import print_function
+
+
 import logging
 import sys
 import warnings
 import numpy as np
-import os
-from Cluster.Node import Node
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import show, scatter, annotate
+
+from Link import Link
+from Node import Node
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
-from nltk import StanfordNERTagger
 from sklearn import metrics
-from sklearn import decomposition
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import euclidean_distances
-from Cluster.Link import Link
 
 
 def tokenize(text):

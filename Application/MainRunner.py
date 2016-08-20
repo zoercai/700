@@ -1,6 +1,6 @@
 import json
 from flask import Flask, render_template, request, Response
-from articlesRetriever import retrieve_articles
+from ArticlesRetriever import retrieve_articles
 from Cluster.Clusterer import cluster
 
 app = Flask(__name__)
