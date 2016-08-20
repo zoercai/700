@@ -96,22 +96,33 @@ def cluster(articles_list, no_of_clusters):
     # logging.info(clusters)
 
     # x-means clustering
-    silhouette_scores = [0.0, 0.0]
+    silhouette_scores = [0.0,0.0]
+    silhouette_individual_scores = []
     for i in range(2, no_of_clusters+1):
         clustering = MiniBatchKMeans(n_clusters=i, init='k-means++', n_init=1, verbose=0)
         clusters = clustering.fit_predict(final_matrix)
         logging.info("Article clusters, method: k-means")
         # logging.info(clusters)
         logging.info("silhouette_score for %d clusters: " % i)
-        silhouette_score = metrics.silhouette_score(final_matrix, clustering.labels_)
+        silhouette_score = metrics.silhouette_score(final_matrix, clusters)
         logging.info(silhouette_score)
         silhouette_scores.append(silhouette_score)
+
     # Get index of max (k-means)
+    silhouette_individual_scores.append(metrics.silhouette_samples(final_matrix, clustering.labels_))
+    logging.info(silhouette_individual_scores)
+
+    # Choose the optimal number of clusters based on the largest silhouette_score
     best_cluster_number = silhouette_scores.index(max(silhouette_scores))
     clustering = MiniBatchKMeans(n_clusters=best_cluster_number, init='k-means++', n_init=1, verbose=0)
     clusters = clustering.fit_predict(final_matrix)
     logging.info("Final silhouette score for %d clusters: " % best_cluster_number)
     logging.info(metrics.silhouette_score(final_matrix, clustering.labels_))
+    for i in silhouette_individual_scores:
+        logging.info("Silhouette SCORE:")
+        logging.info(i)
+
+
 
     # # DBSCAN clustering
     # clustering = DBSCAN(eps=0.0000000000000000000000001, min_samples=2)
@@ -130,7 +141,8 @@ def cluster(articles_list, no_of_clusters):
     for i, item in enumerate(articles_content):
         features = zip(feature_names, final_list[i])
         sorted_features = sorted(features, key=lambda x: x[1], reverse=True)
-        new_article_node = Node(articles_list[i].name, int(clusters[i]), ",".join("(%s,%s)" % tup for tup in sorted_features), articles_list[i].bodyhtml)
+        new_article_node = Node(articles_list[i].name, int(clusters[i]),
+                                ",".join("(%s,%s)" % tup for tup in sorted_features), articles_list[i].bodyhtml)
         node_list.append(new_article_node)
 
     for i, centroid_vector in enumerate(clustering.cluster_centers_):
@@ -138,7 +150,8 @@ def cluster(articles_list, no_of_clusters):
         top_features = []
         for ind in order_centroids[i, :10]:
             top_features.append(str(feature_names[ind]) + ": " + str(clustering.cluster_centers_[i, ind]))
-        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features), str(top_features))
+        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features), str(top_features),
+                                 str(silhouette_scores[i + 1]))
         node_list.append(new_centroid_node)
 
     # Append main centroid
