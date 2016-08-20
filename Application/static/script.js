@@ -55,6 +55,9 @@ function visualise(results, startDate, endDate, clusters) {
         $('#sidePanel').append('<div id="title"></div>');
         $('#sidePanel').append('<div id="features"></div>');
         $('#sidePanel').append('<div id="content"></div>');
+        $('#sidePanel').append('<div id="rating"></div>');
+
+        // $('#sidePanel').append('<div id="rating"></div>');
 
         var width = +window.innerWidth;
         var height = +window.innerHeight;
@@ -111,6 +114,9 @@ function visualise(results, startDate, endDate, clusters) {
                 $('#title').html("<h1>" + d.id + "</h1>");
                 $('#features').html(d.features);
                 $('#content').html(d.bodyhtml);
+                $('#rating').html(d.silhouette);
+                // $('#rating').html(d.silhouette);
+                
             });
 
         $('.node').each(function () {
