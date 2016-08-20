@@ -2,14 +2,19 @@ import logging
 import sys
 import warnings
 import numpy as np
+import os
 from Cluster.Node import Node
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import show, scatter, annotate
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
+from nltk import StanfordNERTagger
 from sklearn import metrics
+from sklearn import decomposition
 from sklearn.cluster import MiniBatchKMeans
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import euclidean_distances
 from Cluster.Link import Link
 
@@ -20,6 +25,15 @@ def tokenize(text):
 
     filtered_tokens = [word for word in tokens if (word not in stopwords.words('english'))]  # Filters out stopwords
 
+    # parent_folder = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    # tagger = os.path.join(parent_folder, 'stanford-ner.jar')
+    # type = os.path.join(parent_folder, 'english.conll.4class.distsim.crf.ser.gz')
+    # st = StanfordNERTagger(type, tagger)
+    # tokens = st.tag(filtered_tokens)
+    # ne = [token for token, tag in tokens if tag != 'O']
+    # # print(ne)
+    # return ne
+
     # Turns words into their bases
     lemmatizer = WordNetLemmatizer()
     post_to_lem = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r'}
@@ -27,6 +41,7 @@ def tokenize(text):
     lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]]) for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
     # lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:3]]) for i, j in pos_tag(filtered_tokens) if j[:3] in post_to_lem]
     # logging.debug(lemmatized_tokens)
+
     return lemmatized_tokens
 
 
@@ -36,19 +51,27 @@ def cluster(articles_list, no_of_clusters):
 
     # Add articles into dictionary
     token_dict = {}
+    article_content_dict = {}
     for article in articles_list:
         token_dict[article.name] = article.body
+        article_content_dict[article.name] = article.bodyhtml
     for headline in token_dict.keys():
         logging.info(headline)
 
     # Convert the tokens into matrix of tfidf values
     max_features = no_of_clusters * 4
 
-    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features)
-    tfidf_matrix = tfidf_vectorizer.fit_transform(token_dict.values())
+    articles_content = [article.body for article in articles_list]
+
+    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features, lowercase=False)
+    tfidf_matrix = tfidf_vectorizer.fit_transform(articles_content)
+
+    # tf_vectorizer = CountVectorizer(tokenizer=tokenize, stop_words='english', max_features=None, lowercase=False)
+    # tfidf_matrix = tf_vectorizer.fit_transform(token_dict.values())
 
     # Get feature names
     feature_names = tfidf_vectorizer.get_feature_names()
+    # feature_names = tf_vectorizer.get_feature_names()
     logging.info(feature_names)
 
     # # Convert using hashing vectorizer instead
@@ -104,8 +127,11 @@ def cluster(articles_list, no_of_clusters):
 
     # Turn articles and centroids into nodes
     node_list = []
-    for i, item in enumerate(articles_list):
-        new_article_node = Node(item.name, int(clusters[i]), item.bodyhtml)
+    final_list = final_matrix.tolist()
+    for i, item in enumerate(articles_content):
+        features = zip(feature_names, final_list[i])
+        sorted_features = sorted(features, key=lambda x: x[1], reverse=True)
+        new_article_node = Node(articles_list[i].name, int(clusters[i]), ",".join("(%s,%s)" % tup for tup in sorted_features), articles_list[i].bodyhtml)
         node_list.append(new_article_node)
 
     for i, centroid_vector in enumerate(clustering.cluster_centers_):
@@ -113,11 +139,11 @@ def cluster(articles_list, no_of_clusters):
         top_features = []
         for ind in order_centroids[i, :10]:
             top_features.append(str(feature_names[ind]) + ": " + str(clustering.cluster_centers_[i, ind]))
-        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features))
+        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features), str(top_features))
         node_list.append(new_centroid_node)
 
     # Append main centroid
-    main_centroid = Node("centroid_main", k_clusters, 'centroid')
+    main_centroid = Node("centroid_main", k_clusters, tfidf_vectorizer.get_feature_names(), 'centroid')
     node_list.append(main_centroid)
 
     # Calculate distances
@@ -140,7 +166,7 @@ def cluster(articles_list, no_of_clusters):
     logging.info(clustering.cluster_centers_)
 
     print(clusters)
-    print([article.name for article in articles_list])
+    print([article.name for article in articles_list], sep='\n')
     for i, row in enumerate(intra_centroid_distance_matrix):
         centroid_num = clusters[i]
         distance = distance_normaliser(row[centroid_num])
@@ -162,13 +188,13 @@ def cluster(articles_list, no_of_clusters):
     # # PCA
     # pca = decomposition.PCA(n_components=2)
     # reduced_matrix = pca.fit_transform(final_matrix)
-
-    # # LSA
-    # svd = TruncatedSVD(2)
-    # normalizer = Normalizer(copy=False)
-    # lsa = make_pipeline(svd, normalizer)
-    # reduced_matrix = lsa.fit_transform(final_matrix)
-
+    #
+    # # # LSA
+    # # svd = TruncatedSVD(2)
+    # # normalizer = Normalizer(copy=False)
+    # # lsa = make_pipeline(svd, normalizer)
+    # # reduced_matrix = lsa.fit_transform(final_matrix)
+    #
     # # Visualize the clustering
     # def plot_clustering(reduced_matrix, labels, title=None):
     #     plt.figure()
@@ -192,7 +218,7 @@ def cluster(articles_list, no_of_clusters):
     # print(reduced_matrix)
     # plot_clustering(reduced_matrix, clustering.labels_)
     # show()
-
+    #
     # # Plot the points
     # count = 1
     # for f1, f2 in reduced_matrix:
