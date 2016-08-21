@@ -48,7 +48,7 @@ def tokenize(text):
 
 def cluster(articles_list, no_of_clusters):
     warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
-    logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     # Add articles into dictionary
     token_dict = {}
@@ -91,7 +91,7 @@ def cluster(articles_list, no_of_clusters):
     # Hierarchical clustering
     def hierarchical(no_of_clusters):
         # for linkage in ('ward', 'average', 'complete'):
-        linkage = 'ward'
+        linkage = 'complete'
         h_clustering = AgglomerativeClustering(linkage=linkage, n_clusters=no_of_clusters)
         h_clusters = h_clustering.fit_predict(final_matrix)
         logging.debug("Article clusters, method: " + linkage)
@@ -152,17 +152,17 @@ def cluster(articles_list, no_of_clusters):
     clustering = h_clustering
     clusters = h_clusters
     cluster_centers = h_cluster_centers
-    if x_final_silhouette > h_final_silhouette:
-        clustering = x_clustering
-        clusters = x_clusters
-        cluster_centers = x_clustering.cluster_centers_
-        logging.debug("Winning silhouette score: ")
-        logging.debug(x_final_silhouette)
-        logging.debug('X-means wins!')
-    else:
-        logging.debug("Winning silhouette score: ")
-        logging.debug(h_final_silhouette)
-        logging.debug('Hierachical wins!')
+    # if x_final_silhouette > h_final_silhouette:
+    #     clustering = x_clustering
+    #     clusters = x_clusters
+    #     cluster_centers = x_clustering.cluster_centers_
+    #     logging.debug("Winning silhouette score: ")
+    #     logging.debug(x_final_silhouette)
+    #     logging.debug('X-means wins!')
+    # else:
+    #     logging.debug("Winning silhouette score: ")
+    #     logging.debug(h_final_silhouette)
+    #     logging.debug('Hierachical wins!')
 
     # ----------------------------------------------------------------
     # ----------------------------------------------------------------
