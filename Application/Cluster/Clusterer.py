@@ -13,8 +13,9 @@ from nltk.tokenize import RegexpTokenizer
 from nltk import StanfordNERTagger
 from sklearn import metrics
 from sklearn import decomposition
-from sklearn.cluster import MiniBatchKMeans
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.pipeline import make_pipeline
+from sklearn.cluster import MiniBatchKMeans, DBSCAN, AgglomerativeClustering
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, HashingVectorizer, TfidfTransformer
 from sklearn.metrics.pairwise import euclidean_distances
 from Cluster.Link import Link
 
@@ -25,13 +26,14 @@ def tokenize(text):
 
     filtered_tokens = [word for word in tokens if (word not in stopwords.words('english'))]  # Filters out stopwords
 
+    # # Using NE only - not recommended
     # parent_folder = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    # tagger = os.path.join(parent_folder, 'stanford-ner.jar')
-    # type = os.path.join(parent_folder, 'english.conll.4class.distsim.crf.ser.gz')
-    # st = StanfordNERTagger(type, tagger)
+    # ne_tagger = os.path.join(parent_folder, 'stanford-ner.jar')
+    # ne_type = os.path.join(parent_folder, 'english.conll.4class.distsim.crf.ser.gz')
+    # st = StanfordNERTagger(ne_type, ne_tagger)
     # tokens = st.tag(filtered_tokens)
     # ne = [token for token, tag in tokens if tag != 'O']
-    # # print(ne)
+    # logging.info(ne)
     # return ne
 
     # Turns words into their bases
@@ -39,15 +41,14 @@ def tokenize(text):
     post_to_lem = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r'}
     post_to_lem = {'NN': 'n'}
     lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]]) for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
-    # lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:3]]) for i, j in pos_tag(filtered_tokens) if j[:3] in post_to_lem]
-    # logging.debug(lemmatized_tokens)
+    # logging.info(lemmatized_tokens)
 
     return lemmatized_tokens
 
 
 def cluster(articles_list, no_of_clusters):
     warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
-    logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     # Add articles into dictionary
     token_dict = {}
@@ -63,9 +64,11 @@ def cluster(articles_list, no_of_clusters):
 
     articles_content = [article.body for article in articles_list]
 
+    # Calculating tf-df
     tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, stop_words='english', max_features=max_features, lowercase=False)
     tfidf_matrix = tfidf_vectorizer.fit_transform(articles_content)
 
+    # Using only term frequency
     # tf_vectorizer = CountVectorizer(tokenizer=tokenize, stop_words='english', max_features=None, lowercase=False)
     # tfidf_matrix = tf_vectorizer.fit_transform(token_dict.values())
 
@@ -74,7 +77,7 @@ def cluster(articles_list, no_of_clusters):
     # feature_names = tf_vectorizer.get_feature_names()
     logging.info(feature_names)
 
-    # # Convert using hashing vectorizer instead
+    # # Convert using hashing vectorizer instead - not recommended
     # hasher = HashingVectorizer(n_features=max_features,
     #                            stop_words='english', non_negative=True,
     #                            norm=None, binary=False)
@@ -82,108 +85,89 @@ def cluster(articles_list, no_of_clusters):
     # tfidf_matrix = hasing_vectorizer.fit_transform(token_dict.values())
 
     final_matrix = tfidf_matrix.todense()
-
     logging.info("Document points positions:")
     logging.info(final_matrix)
 
-    k_clusters = no_of_clusters
-
-    # # hierarchical clustering
-    # # for linkage in ('ward', 'average', 'complete'):
-    # linkage = 'ward'
-    # clustering = AgglomerativeClustering(linkage=linkage, n_clusters=k_clusters)
-    # clusters = clustering.fit_predict(final_matrix)
-    # logging.info("Article clusters, method: " + linkage)
-    # logging.info(clusters)
-
-    # x-means clustering
-    silhouette_scores = [0.0, 0.0]
-    for i in range(2, no_of_clusters+1):
-        clustering = MiniBatchKMeans(n_clusters=i, init='k-means++', n_init=1, verbose=0)
-        clusters = clustering.fit_predict(final_matrix)
-        logging.info("Article clusters, method: k-means")
-        # logging.info(clusters)
-        logging.info("silhouette_score for %d clusters: " % i)
-        silhouette_score = metrics.silhouette_score(final_matrix, clustering.labels_)
+    # Hierarchical clustering
+    def hierarchical(no_of_clusters):
+        # for linkage in ('ward', 'average', 'complete'):
+        linkage = 'ward'
+        h_clustering = AgglomerativeClustering(linkage=linkage, n_clusters=no_of_clusters)
+        h_clusters = h_clustering.fit_predict(final_matrix)
+        logging.info("Article clusters, method: " + linkage)
+        logging.info(h_clusters)
+        h_cluster_centers = []
+        for i in range(0, no_of_clusters):
+            article_indices = [j for j, cluster_num in enumerate(h_clusters) if cluster_num == i]
+            logging.info(article_indices)
+            cluster_articles = final_matrix[article_indices, :]
+            logging.info(cluster_articles)
+            centroids_coord = cluster_articles.mean(axis=0)
+            h_cluster_centers.append(list(np.array(centroids_coord).reshape(-1,)))
+        h_cluster_centers = np.array(h_cluster_centers)
+        silhouette_score = metrics.silhouette_score(final_matrix, h_clustering.labels_)
+        logging.info("Silhouette score for %d clusters: " % no_of_clusters)
         logging.info(silhouette_score)
-        silhouette_scores.append(silhouette_score)
-    # Get index of max (k-means)
-    best_cluster_number = silhouette_scores.index(max(silhouette_scores))
-    clustering = MiniBatchKMeans(n_clusters=best_cluster_number, init='k-means++', n_init=1, verbose=0)
-    clusters = clustering.fit_predict(final_matrix)
+        return silhouette_score, h_clustering, h_clusters, h_cluster_centers
+
+    h_silhouette_scores = [0.0, 0.0]
+    for j in range(2, no_of_clusters+1):
+        silhouette_score, h_clustering, h_clusters, h_cluster_centers = hierarchical(j)
+        h_silhouette_scores.append(silhouette_score)
+    # Get index of max
+    best_cluster_number = h_silhouette_scores.index(max(h_silhouette_scores))
+    silhouette_score, h_clustering, h_clusters, h_cluster_centers = hierarchical(best_cluster_number)
+    h_silhouette_scores.append(silhouette_score)
     logging.info("Final silhouette score for %d clusters: " % best_cluster_number)
-    logging.info(metrics.silhouette_score(final_matrix, clustering.labels_))
+    h_final_silhouette = metrics.silhouette_score(final_matrix, h_clustering.labels_)
+    logging.info(h_final_silhouette)
 
-    # # DBSCAN clustering
-    # clustering = DBSCAN(eps=0.0000000000000000000000001, min_samples=2)
-    # clusters = clustering.fit_predict(final_matrix)
+    # X-means clustering
+    x_silhouette_scores = [0.0, 0.0]
+    for i in range(2, no_of_clusters+1):
+        k_clustering = MiniBatchKMeans(n_clusters=i, init='k-means++', n_init=1, verbose=0)
+        k_clusters = k_clustering.fit_predict(final_matrix)
+        logging.info("Article clusters, method: k-means")
+        logging.info(k_clusters)
+        logging.info("silhouette_score for %d clusters: " % i)
+        silhouette_score = metrics.silhouette_score(final_matrix, k_clustering.labels_)
+        logging.info(silhouette_score)
+        x_silhouette_scores.append(silhouette_score)
+    # Get index of max (k-means)
+    best_cluster_number = x_silhouette_scores.index(max(x_silhouette_scores))
+    x_clustering = MiniBatchKMeans(n_clusters=best_cluster_number, init='k-means++', n_init=1, verbose=0)
+    x_clusters = x_clustering.fit_predict(final_matrix)
+    logging.info("Final silhouette score for %d clusters: " % best_cluster_number)
+    x_final_silhouette = metrics.silhouette_score(final_matrix, x_clustering.labels_)
+    logging.info(x_final_silhouette)
+
+    # # DBSCAN clustering — used for checking data concentration
+    # db_clustering = DBSCAN(eps=0.00001, min_samples=1)
+    # db_clusters = clustering.fit_predict(final_matrix)
     # # print(metrics.silhouette_score(final_matrix, clustering.labels_))
-    # # logging.info("Article clusters, method: k-means")
-    # # logging.info(clusters)
+    # logging.info("Article clusters, method: DBSCAN")
+    # logging.info(db_clusters)
+
+    # Set clustering algorithm
+    clustering = h_clustering
+    clusters = h_clusters
+    cluster_centers = h_cluster_centers
+    if x_final_silhouette > h_final_silhouette:
+        clustering = x_clustering
+        clusters = x_clusters
+        cluster_centers = x_clustering.cluster_centers_
+        logging.info("Winning silhouette score: ")
+        logging.info(x_final_silhouette)
+        logging.info('x-means wins!')
+    else:
+        logging.info("Winning silhouette score: ")
+        logging.info(h_final_silhouette)
+        logging.info('hierachical wins!')
 
     # ----------------------------------------------------------------
     # ----------------------------------------------------------------
-    # Start of web app processing
-
-    # Turn articles and centroids into nodes
-    node_list = []
-    final_list = final_matrix.tolist()
-    for i, item in enumerate(articles_content):
-        features = zip(feature_names, final_list[i])
-        sorted_features = sorted(features, key=lambda x: x[1], reverse=True)
-        new_article_node = Node(articles_list[i].name, int(clusters[i]), ",".join("(%s,%s)" % tup for tup in sorted_features), articles_list[i].bodyhtml)
-        node_list.append(new_article_node)
-
-    for i, centroid_vector in enumerate(clustering.cluster_centers_):
-        order_centroids = clustering.cluster_centers_.argsort()[:, ::-1]
-        top_features = []
-        for ind in order_centroids[i, :10]:
-            top_features.append(str(feature_names[ind]) + ": " + str(clustering.cluster_centers_[i, ind]))
-        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features), str(top_features))
-        node_list.append(new_centroid_node)
-
-    # Append main centroid
-    main_centroid = Node("centroid_main", k_clusters, tfidf_vectorizer.get_feature_names(), 'centroid')
-    node_list.append(main_centroid)
-
-    # Calculate distances
-    def distance_normaliser(distance):
-        return int(distance * 10) + 1
-
-    link_list = []
-
-    centroid = np.mean(clustering.cluster_centers_, axis=0)
-    inter_centroid_distance_matrix = euclidean_distances(clustering.cluster_centers_, centroid)
-
-    logging.info("inter-centroid distances")
-    logging.info(inter_centroid_distance_matrix)
-    for i, row in enumerate(inter_centroid_distance_matrix):
-        new_link = Link("centroid_main", "centroid_" + str(i), distance_normaliser(row[0]))
-        link_list.append(new_link)
-
-    intra_centroid_distance_matrix = euclidean_distances(final_matrix, clustering.cluster_centers_)
-    logging.info("Centroid vectors")
-    logging.info(clustering.cluster_centers_)
-
-    print(clusters)
-    print([article.name for article in articles_list], sep='\n')
-    for i, row in enumerate(intra_centroid_distance_matrix):
-        centroid_num = clusters[i]
-        distance = distance_normaliser(row[centroid_num])
-        new_link = Link(articles_list[i].name, "centroid_" + str(centroid_num), distance)
-        link_list.append(new_link)
-
-    # ----------------------------------------------------------------
-
-    # # Do not uncomment this unless you want to see a mess
-    # for i, row in enumerate(intra_centroid_distance_matrix):
-    #     for j, distance in enumerate(row):
-    #         new_link = Link(articles_list[i].name, "centroid_" + str(j), distance)
-    #         link_list.append(new_link)
-
-    # ----------------------------------------------------------------
-    # ----------------------------------------------------------------
-
+    # # Start of local visualisation
+    #
     # # Reduce dimensionality to 2 for plotting
     # # PCA
     # pca = decomposition.PCA(n_components=2)
@@ -226,5 +210,7 @@ def cluster(articles_list, no_of_clusters):
     #     plt.annotate(count, (f1, f2))
     #     count += 1
     # show()
+    # ----------------------------------------------------------------
+    # ----------------------------------------------------------------
 
-    return node_list, link_list
+    return final_matrix, tfidf_vectorizer, clusters, cluster_centers

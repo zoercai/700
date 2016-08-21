@@ -2,6 +2,7 @@ import json
 from flask import Flask, render_template, request, Response
 from ArticlesRetriever import retrieve_articles
 from Cluster.Clusterer import cluster
+from WebAppProcessor import process
 
 app = Flask(__name__)
 
@@ -16,13 +17,16 @@ def clusterer():
     results = request.args.get('results')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    clusters = request.args.get('clusters', 20, type=int)
+    cluster_num = request.args.get('clusters', 20, type=int)
 
     # retrieve articles
     articles_list = retrieve_articles(results, start_date, end_date)
 
-    # process articles
-    node_list, link_list = cluster(articles_list, clusters)
+    # cluster articles
+    final_matrix, tfidf_vectorizer, clusters, cluster_centers = cluster(articles_list, cluster_num)
+
+    # process clusters
+    node_list, link_list = process(final_matrix, tfidf_vectorizer, articles_list, clusters, cluster_centers)
 
     # format & jsonify
     json_nodelist = json.dumps([ob.__dict__ for ob in node_list])
