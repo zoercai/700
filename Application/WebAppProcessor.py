@@ -43,18 +43,20 @@ def process(final_matrix, tfidf_vectorizer, articles_list, clusters, cluster_cen
     centroid = np.mean(cluster_centers, axis=0)
     inter_centroid_distance_matrix = euclidean_distances(cluster_centers, centroid)
 
-    logging.info("inter-centroid distances")
-    logging.info(inter_centroid_distance_matrix)
+    logging.debug("inter-centroid distances")
+    logging.debug(inter_centroid_distance_matrix)
     for i, row in enumerate(inter_centroid_distance_matrix):
         new_link = Link("centroid_main", "centroid_" + str(i), distance_normaliser(row[0]))
         link_list.append(new_link)
 
     intra_centroid_distance_matrix = euclidean_distances(final_matrix, cluster_centers)
-    logging.info("Centroid vectors")
-    logging.info(cluster_centers)
+    logging.debug("Centroid vectors")
+    logging.debug(cluster_centers)
 
-    print(clusters)
-    print([article.name for article in articles_list], sep='\n')
+    logging.debug("Final clusters")
+    logging.debug(clusters)
+    logging.debug("Article titles")
+    logging.debug([article.name for article in articles_list])
     for i, row in enumerate(intra_centroid_distance_matrix):
         centroid_num = clusters[i]
         distance = distance_normaliser(row[centroid_num])

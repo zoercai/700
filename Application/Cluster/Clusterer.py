@@ -33,7 +33,7 @@ def tokenize(text):
     # st = StanfordNERTagger(ne_type, ne_tagger)
     # tokens = st.tag(filtered_tokens)
     # ne = [token for token, tag in tokens if tag != 'O']
-    # logging.info(ne)
+    # logging.debug(ne)
     # return ne
 
     # Turns words into their bases
@@ -41,14 +41,14 @@ def tokenize(text):
     post_to_lem = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r'}
     post_to_lem = {'NN': 'n'}
     lemmatized_tokens = [lemmatizer.lemmatize(i, post_to_lem[j[:2]]) for i, j in pos_tag(filtered_tokens) if j[:2] in post_to_lem]
-    # logging.info(lemmatized_tokens)
+    # logging.debug(lemmatized_tokens)
 
     return lemmatized_tokens
 
 
 def cluster(articles_list, no_of_clusters):
     warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
-    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+    logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
     # Add articles into dictionary
     token_dict = {}
@@ -56,8 +56,8 @@ def cluster(articles_list, no_of_clusters):
     for article in articles_list:
         token_dict[article.name] = article.body
         article_content_dict[article.name] = article.bodyhtml
-    for headline in token_dict.keys():
-        logging.info(headline)
+    # for headline in token_dict.keys():
+    #     logging.debug(headline)
 
     # Convert the tokens into matrix of tfidf values
     max_features = no_of_clusters * 4
@@ -75,7 +75,7 @@ def cluster(articles_list, no_of_clusters):
     # Get feature names
     feature_names = tfidf_vectorizer.get_feature_names()
     # feature_names = tf_vectorizer.get_feature_names()
-    logging.info(feature_names)
+    logging.debug(feature_names)
 
     # # Convert using hashing vectorizer instead - not recommended
     # hasher = HashingVectorizer(n_features=max_features,
@@ -85,8 +85,8 @@ def cluster(articles_list, no_of_clusters):
     # tfidf_matrix = hasing_vectorizer.fit_transform(token_dict.values())
 
     final_matrix = tfidf_matrix.todense()
-    logging.info("Document points positions:")
-    logging.info(final_matrix)
+    logging.debug("Document points positions:")
+    logging.debug(final_matrix)
 
     # Hierarchical clustering
     def hierarchical(no_of_clusters):
@@ -94,20 +94,20 @@ def cluster(articles_list, no_of_clusters):
         linkage = 'ward'
         h_clustering = AgglomerativeClustering(linkage=linkage, n_clusters=no_of_clusters)
         h_clusters = h_clustering.fit_predict(final_matrix)
-        logging.info("Article clusters, method: " + linkage)
-        logging.info(h_clusters)
+        logging.debug("Article clusters, method: " + linkage)
+        logging.debug(h_clusters)
         h_cluster_centers = []
         for i in range(0, no_of_clusters):
             article_indices = [j for j, cluster_num in enumerate(h_clusters) if cluster_num == i]
-            logging.info(article_indices)
+            logging.debug(article_indices)
             cluster_articles = final_matrix[article_indices, :]
-            logging.info(cluster_articles)
+            # logging.debug(cluster_articles)
             centroids_coord = cluster_articles.mean(axis=0)
             h_cluster_centers.append(list(np.array(centroids_coord).reshape(-1,)))
         h_cluster_centers = np.array(h_cluster_centers)
         silhouette_score = metrics.silhouette_score(final_matrix, h_clustering.labels_)
-        logging.info("Silhouette score for %d clusters: " % no_of_clusters)
-        logging.info(silhouette_score)
+        logging.debug("Silhouette score for %d clusters: " % no_of_clusters)
+        logging.debug(silhouette_score)
         return silhouette_score, h_clustering, h_clusters, h_cluster_centers
 
     h_silhouette_scores = [0.0, 0.0]
@@ -118,35 +118,35 @@ def cluster(articles_list, no_of_clusters):
     best_cluster_number = h_silhouette_scores.index(max(h_silhouette_scores))
     silhouette_score, h_clustering, h_clusters, h_cluster_centers = hierarchical(best_cluster_number)
     h_silhouette_scores.append(silhouette_score)
-    logging.info("Final silhouette score for %d clusters: " % best_cluster_number)
+    logging.debug("Final silhouette score for %d clusters: " % best_cluster_number)
     h_final_silhouette = metrics.silhouette_score(final_matrix, h_clustering.labels_)
-    logging.info(h_final_silhouette)
+    logging.debug(h_final_silhouette)
 
     # X-means clustering
     x_silhouette_scores = [0.0, 0.0]
     for i in range(2, no_of_clusters+1):
         k_clustering = MiniBatchKMeans(n_clusters=i, init='k-means++', n_init=1, verbose=0)
         k_clusters = k_clustering.fit_predict(final_matrix)
-        logging.info("Article clusters, method: k-means")
-        logging.info(k_clusters)
-        logging.info("silhouette_score for %d clusters: " % i)
+        logging.debug("Article clusters, method: k-means")
+        logging.debug(k_clusters)
+        logging.debug("silhouette_score for %d clusters: " % i)
         silhouette_score = metrics.silhouette_score(final_matrix, k_clustering.labels_)
-        logging.info(silhouette_score)
+        logging.debug(silhouette_score)
         x_silhouette_scores.append(silhouette_score)
     # Get index of max (k-means)
     best_cluster_number = x_silhouette_scores.index(max(x_silhouette_scores))
     x_clustering = MiniBatchKMeans(n_clusters=best_cluster_number, init='k-means++', n_init=1, verbose=0)
     x_clusters = x_clustering.fit_predict(final_matrix)
-    logging.info("Final silhouette score for %d clusters: " % best_cluster_number)
+    logging.debug("Final silhouette score for %d clusters: " % best_cluster_number)
     x_final_silhouette = metrics.silhouette_score(final_matrix, x_clustering.labels_)
-    logging.info(x_final_silhouette)
+    logging.debug(x_final_silhouette)
 
     # # DBSCAN clustering — used for checking data concentration
     # db_clustering = DBSCAN(eps=0.00001, min_samples=1)
     # db_clusters = clustering.fit_predict(final_matrix)
     # # print(metrics.silhouette_score(final_matrix, clustering.labels_))
-    # logging.info("Article clusters, method: DBSCAN")
-    # logging.info(db_clusters)
+    # logging.debug("Article clusters, method: DBSCAN")
+    # logging.debug(db_clusters)
 
     # Set clustering algorithm
     clustering = h_clustering
@@ -156,13 +156,13 @@ def cluster(articles_list, no_of_clusters):
         clustering = x_clustering
         clusters = x_clusters
         cluster_centers = x_clustering.cluster_centers_
-        logging.info("Winning silhouette score: ")
-        logging.info(x_final_silhouette)
-        logging.info('x-means wins!')
+        logging.debug("Winning silhouette score: ")
+        logging.debug(x_final_silhouette)
+        logging.debug('X-means wins!')
     else:
-        logging.info("Winning silhouette score: ")
-        logging.info(h_final_silhouette)
-        logging.info('hierachical wins!')
+        logging.debug("Winning silhouette score: ")
+        logging.debug(h_final_silhouette)
+        logging.debug('Hierachical wins!')
 
     # ----------------------------------------------------------------
     # ----------------------------------------------------------------
