@@ -1,6 +1,7 @@
 body{
     background-repeat: repeat;
-    font: 1em sans-serif;
+    font-size: 1em;
+    font-family: 'Poiret One', 'Helvetica Neue', sans-serif;
 }
 
 form{
@@ -11,6 +12,11 @@ form{
     position: relative;
     top: 45vh;
     transform: translateY(-50%);
+}
+
+input[type="text"]
+{
+    font-family:  'Poiret One', 'Helvetica Neue', cursive;
 }
 
 input{
@@ -133,6 +139,7 @@ div#sidePanel{
     overflow: scroll;
     color: rgba(0, 0, 0, 0.61);
     font-size: 2vh;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 
 div#sidePanel img, div#sidePanel video{
