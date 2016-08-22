@@ -3,7 +3,7 @@
 
 import codecs
 import json
-from urllib import urlopen
+from urllib.request import urlopen
 from Article import Article
 
 
