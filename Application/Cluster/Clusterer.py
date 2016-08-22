@@ -5,6 +5,8 @@ import logging
 import sys
 import warnings
 import numpy as np
+import timeit
+
 
 from Link import Link
 from Node import Node
@@ -14,6 +16,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
 from sklearn import metrics
 from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import euclidean_distances
 
@@ -98,8 +101,9 @@ def cluster(articles_list, no_of_clusters):
     # x-means clustering
     silhouette_scores = [0.0,0.0]
     silhouette_individual_scores = []
+    start_time = timeit.default_timer()
     for i in range(2, no_of_clusters+1):
-        clustering = MiniBatchKMeans(n_clusters=i, init='k-means++', n_init=1, verbose=0)
+        clustering = KMeans(n_clusters=i, init='k-means++', n_init=1, verbose=0)
         clusters = clustering.fit_predict(final_matrix)
         logging.info("Article clusters, method: k-means")
         # logging.info(clusters)
@@ -108,19 +112,17 @@ def cluster(articles_list, no_of_clusters):
         logging.info(silhouette_score)
         silhouette_scores.append(silhouette_score)
 
-    # Get index of max (k-means)
-    silhouette_individual_scores.append(metrics.silhouette_samples(final_matrix, clustering.labels_))
-    logging.info(silhouette_individual_scores)
 
     # Choose the optimal number of clusters based on the largest silhouette_score
     best_cluster_number = silhouette_scores.index(max(silhouette_scores))
-    clustering = MiniBatchKMeans(n_clusters=best_cluster_number, init='k-means++', n_init=1, verbose=0)
+    clustering = KMeans(n_clusters=best_cluster_number, init='k-means++', n_init=1, verbose=0)
+    logging.info("Time Taken: ")
+    logging.info(timeit.default_timer() - start_time)
+
     clusters = clustering.fit_predict(final_matrix)
     logging.info("Final silhouette score for %d clusters: " % best_cluster_number)
-    logging.info(metrics.silhouette_score(final_matrix, clustering.labels_))
-    for i in silhouette_individual_scores:
-        logging.info("Silhouette SCORE:")
-        logging.info(i)
+    logging.info(metrics.silhouette_score(final_matrix, clusters))
+
 
 
 
@@ -150,8 +152,7 @@ def cluster(articles_list, no_of_clusters):
         top_features = []
         for ind in order_centroids[i, :10]:
             top_features.append(str(feature_names[ind]) + ": " + str(clustering.cluster_centers_[i, ind]))
-        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features), str(top_features),
-                                 str(silhouette_scores[i + 1]))
+        new_centroid_node = Node("centroid_" + str(i), int(i), str(top_features), str(top_features))
         node_list.append(new_centroid_node)
 
     # Append main centroid
