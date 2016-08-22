@@ -4,6 +4,7 @@ import warnings
 import numpy as np
 import os
 from Cluster.Node import Node
+import nltk
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
