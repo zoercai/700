@@ -4,8 +4,6 @@ import warnings
 import numpy as np
 import os
 from Cluster.Node import Node
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import show, scatter, annotate
 from nltk import pos_tag
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
