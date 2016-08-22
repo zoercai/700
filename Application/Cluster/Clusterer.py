@@ -156,17 +156,17 @@ def cluster(articles_list, no_of_clusters):
     clustering = h_clustering
     clusters = h_clusters
     cluster_centers = h_cluster_centers
-    # if x_final_silhouette > h_final_silhouette:
-    #     clustering = x_clustering
-    #     clusters = x_clusters
-    #     cluster_centers = x_clustering.cluster_centers_
-    #     logging.debug("Winning silhouette score: ")
-    #     logging.debug(x_final_silhouette)
-    #     logging.debug('X-means wins!')
-    # else:
-    #     logging.debug("Winning silhouette score: ")
-    #     logging.debug(h_final_silhouette)
-    #     logging.debug('Hierachical wins!')
+    if x_final_silhouette > h_final_silhouette:
+        clustering = x_clustering
+        clusters = x_clusters
+        cluster_centers = x_clustering.cluster_centers_
+        logging.debug("Winning silhouette score: ")
+        logging.debug(x_final_silhouette)
+        logging.debug('X-means wins!')
+    else:
+        logging.debug("Winning silhouette score: ")
+        logging.debug(h_final_silhouette)
+        logging.debug('Hierachical wins!')
 
     # ----------------------------------------------------------------
     # ----------------------------------------------------------------
