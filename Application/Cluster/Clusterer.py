@@ -16,6 +16,11 @@ from sklearn.cluster import MiniBatchKMeans, DBSCAN, AgglomerativeClustering
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, HashingVectorizer, TfidfTransformer
 from sklearn.metrics.pairwise import euclidean_distances
 from Cluster.Link import Link
+from os.path import dirname, abspath
+
+
+d = dirname(dirname(abspath(__file__)))
+nltk.data.path.append(str(d)+'/static/')
 
 
 def tokenize(text):
