@@ -17,7 +17,7 @@ def clusterer():
     results = request.args.get('results')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    cluster_num = request.args.get('clusters', 20, type=int)
+    cluster_num = request.args.get('clusters', 5, type=int)
 
     # retrieve articles
     articles_list = retrieve_articles(results, start_date, end_date)
