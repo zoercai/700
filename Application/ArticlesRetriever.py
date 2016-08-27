@@ -13,7 +13,7 @@ def retrieve_articles(results, from_date, to_date):
     query = ''   # Optional, only used for testing
 
     if results == '':
-        results = '100'
+        results = '50'
     if from_date == '':
         from_date = '2016-07-10'
     if to_date == '':
