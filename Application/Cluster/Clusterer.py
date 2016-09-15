@@ -18,7 +18,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, Ha
 from sklearn.metrics.pairwise import euclidean_distances
 from Cluster.Link import Link
 from os.path import dirname, abspath
-
+# import matplotlib.pyplot as plt
 
 d = dirname(dirname(abspath(__file__)))
 nltk.data.path.append(str(d)+'/static/')
@@ -126,7 +126,7 @@ def cluster(articles_list, no_of_clusters):
     h_final_silhouette = metrics.silhouette_score(final_matrix, h_clustering.labels_)
     logging.debug(h_final_silhouette)
 
-    # X-means clustering
+    # Mini-batch k-means clustering
     x_silhouette_scores = [0.0, 0.0]
     for i in range(2, no_of_clusters+1):
         k_clustering = MiniBatchKMeans(n_clusters=i, init='k-means++', n_init=1, verbose=0)
@@ -168,8 +168,8 @@ def cluster(articles_list, no_of_clusters):
         logging.debug(h_final_silhouette)
         logging.debug('Hierachical wins!')
 
-    # ----------------------------------------------------------------
-    # ----------------------------------------------------------------
+    # # ----------------------------------------------------------------
+    # # ----------------------------------------------------------------
     # # Start of local visualisation
     #
     # # Reduce dimensionality to 2 for plotting
@@ -205,7 +205,7 @@ def cluster(articles_list, no_of_clusters):
     # print(clustering.labels_)
     # print(reduced_matrix)
     # plot_clustering(reduced_matrix, clustering.labels_)
-    # show()
+    # plt.show()
     #
     # # Plot the points
     # count = 1
@@ -213,8 +213,8 @@ def cluster(articles_list, no_of_clusters):
     #     plt.scatter(f1, f2)
     #     plt.annotate(count, (f1, f2))
     #     count += 1
-    # show()
-    # ----------------------------------------------------------------
-    # ----------------------------------------------------------------
+    # plt.show()
+    # # ----------------------------------------------------------------
+    # # ----------------------------------------------------------------
 
     return final_matrix, tfidf_vectorizer, clusters, cluster_centers
