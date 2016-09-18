@@ -1,4 +1,4 @@
-# 700
+# Project
 UoA SOFTENG 700 project #72: Grouping similar newspaper articles
 
 ## Description:
@@ -14,6 +14,7 @@ Gill Dobbie
 Ruoyi (Zoe) Cai
 Chanjun Park
 
+---
 
 # How to Run the Application
 * Get python3: https://www.python.org/downloads/
