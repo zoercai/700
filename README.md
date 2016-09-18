@@ -19,23 +19,22 @@ Chanjun Park
 * Get python3: https://www.python.org/downloads/
 
 * Install virtualenv by running the command:
-[sudo] pip3 install virtualenv
+`[sudo] pip3 install virtualenv`
 (For more information on virutalenv installation, visit: https://virtualenv.pypa.io/en/stable/installation/)
 
-* Navigate to the project folder: path/to/700/
+* Navigate to the project folder: `path/to/700/`
 
 * Create a virtualenv by running the command:
-virtualenv venv
-
-* This creates a folder named venv in the project directory.
+`virtualenv venv`
+This creates a folder named venv in the project directory.
 
 * Activate and enter the virtualenv by running the command:
-. venv/bin/activate
+`. venv/bin/activate`
 
 * Install all project dependencies:
-pip3 install -r requirements.txt
+`pip3 install -r requirements.txt`
 
 * Once all dependencies are installed, start the web application:
-python3 Application/MainRunner.py
+`python3 Application/MainRunner.py`
 
-* Then go to http://127.0.0.1:5000/ (or whatever address is displayed) on your web browser.
+* Then go to `http://127.0.0.1:5000/` (or whatever address is displayed) on your web browser.
