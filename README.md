@@ -1,4 +1,4 @@
-# Project
+# Clusterr
 UoA SOFTENG 700 project #72: Grouping similar newspaper articles
 
 ## Description:
@@ -13,6 +13,9 @@ Gill Dobbie
 ## Team
 Ruoyi (Zoe) Cai
 Chanjun Park
+
+## Github
+https://github.com/zoercai/Clusterr
 
 ---
 
