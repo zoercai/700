@@ -17,6 +17,8 @@ Chanjun Park
 ---
 
 # How to Run the Application
+
+## Locally (Allows more than 30 articles to be retrieved)
 * Get python3: https://www.python.org/downloads/
 
 * Install virtualenv by running the command:
@@ -39,3 +41,7 @@ This creates a folder named venv in the project directory.
 `python3 Application/MainRunner.py`
 
 * Then go to `http://127.0.0.1:5000/` (or whatever address is displayed) on your web browser.
+
+
+## Online (A maximum of 30-40 articles can be retrieved due to free server restrictions)
+Visit http://clusterr.zoecai.com
