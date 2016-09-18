@@ -1,4 +1,6 @@
 class Link:
+    # Represents a link (connection) between a node and a centroid in the web app visualisation
+
     source = ""
     target = ""
     value = ""

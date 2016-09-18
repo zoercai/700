@@ -2,6 +2,7 @@
  * Created by Zoe on 13/08/16.
  */
 
+// Date picker for user input
 $('.datepicker-here').datepicker({
 	maxDate: new Date(),
     dateFormat: "yyyy-mm-dd"
@@ -9,8 +10,9 @@ $('.datepicker-here').datepicker({
 
 var loading;
 
+// Gets user input, starts loading screen, and starts visualisation process
 function loadData() {
-    // get values
+    // Get values
     var results = $('#results').val();
     var startDate = $('#startDate').val();
     var endDate = $('#endDate').val();
@@ -20,6 +22,7 @@ function loadData() {
 
     $('body').prepend("<svg></svg>");
 
+    // Loading screen
     loading = true;
 
     $("img.loading").attr("style","display: block;");
@@ -39,11 +42,14 @@ function loadData() {
 
     showNextMsg();
 
+    // Visualisation
     visualise(results, startDate, endDate, clusters);
 
     return false;
 };
 
+
+// Requests JSON results of the clusters and visualises the results
 function visualise(results, startDate, endDate, clusters) {
     var json_source = $SCRIPT_ROOT + '/cluster?results=' + results + '&start_date=' + startDate + '&end_date=' + endDate + '&clusters=' + clusters
     // var json_source = $SCRIPT_ROOT + '/static/miserables.json'
