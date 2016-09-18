@@ -28,7 +28,7 @@ https://github.com/zoercai/Clusterr
 `[sudo] pip3 install virtualenv`
 (For more information on virutalenv installation, visit: https://virtualenv.pypa.io/en/stable/installation/)
 
-* Navigate to the project folder: `path/to/700/`
+* Navigate to the project folder: `path/to/Clusterr/`
 
 * Create a virtualenv by running the command:
 `virtualenv venv`
