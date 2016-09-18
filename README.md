@@ -5,16 +5,7 @@ UoA SOFTENG 700 project #72: Grouping similar newspaper articles
 Grouping related documents involves entity recognition and then measuring how similar the meaning of the entities are. Both these tasks are complex. In this project, you'll tackle the second task. You will manually identify the entities of interest and build a system that does probabilistic data matching of newspaper articles based on the identified entities. The results of the matching will be visualized. The technique will be compared against state of the art algorithms.
 
 ## Outcome:
-a system that groups related newspaper articles
-
-##Prerequisites
-None
-
-## Specialisations
-Software Engineering
-
-## Categories
-Web Tools and Apps
+A system that groups related newspaper articles
 
 ## Supervisor
 Gill Dobbie
@@ -23,6 +14,28 @@ Gill Dobbie
 Ruoyi (Zoe) Cai
 Chanjun Park
 
-## Lab
-Lab allocations have not been finalised
 
+# How to Run the Application
+* Get python3: https://www.python.org/downloads/
+
+* Install virtualenv by running the command:
+[sudo] pip3 install virtualenv
+(For more information on virutalenv installation, visit: https://virtualenv.pypa.io/en/stable/installation/)
+
+* Navigate to the project folder: path/to/700/
+
+* Create a virtualenv by running the command:
+virtualenv venv
+
+* This creates a folder named venv in the project directory.
+
+* Activate and enter the virtualenv by running the command:
+. venv/bin/activate
+
+* Install all project dependencies:
+pip3 install -r requirements.txt
+
+* Once all dependencies are installed, start the web application:
+python3 Application/MainRunner.py
+
+* Then go to http://127.0.0.1:5000/ (or whatever address is displayed) on your web browser.
