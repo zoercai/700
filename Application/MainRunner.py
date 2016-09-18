@@ -9,11 +9,14 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    # Renders the initial page for user input
     return render_template('index.html')
 
 
 @app.route('/cluster')
 def clusterer():
+    # Called when user clicks submit, clusters, and returns result in JSON
+
     results = request.args.get('results')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')

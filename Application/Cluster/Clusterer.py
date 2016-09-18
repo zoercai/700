@@ -25,6 +25,8 @@ nltk.data.path.append(str(d)+'/static/')
 
 
 def tokenize(text):
+    # Turns document text into word tokens, removing stop words and lemmatising the remaining words
+
     tokenizer = RegexpTokenizer(r'\w+')  # Reads all words and drops everything else
     tokens = tokenizer.tokenize(text)
 
@@ -32,8 +34,8 @@ def tokenize(text):
 
     # # Using NE only - not recommended
     # parent_folder = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    # ne_tagger = os.path.join(parent_folder, 'stanford-ner.jar')
-    # ne_type = os.path.join(parent_folder, 'english.conll.4class.distsim.crf.ser.gz')
+    # ne_tagger = os.path.join(parent_folder, 'static', 'stanford-ner.jar')
+    # ne_type = os.path.join(parent_folder, 'static', 'english.conll.4class.distsim.crf.ser.gz')
     # st = StanfordNERTagger(ne_type, ne_tagger)
     # tokens = st.tag(filtered_tokens)
     # ne = [token for token, tag in tokens if tag != 'O']
@@ -51,6 +53,8 @@ def tokenize(text):
 
 
 def cluster(articles_list, no_of_clusters):
+    # Given a list of articles, groups them into clusters
+
     warnings.filterwarnings("ignore", category=DeprecationWarning)  # to remove warnings from k-means method
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
@@ -92,9 +96,9 @@ def cluster(articles_list, no_of_clusters):
     logging.debug("Document points positions:")
     logging.debug(final_matrix)
 
-    # Hierarchical clustering
+    # Agglomerative clustering
     def hierarchical(no_of_clusters):
-        # for linkage in ('ward', 'average', 'complete'):
+        # Using complete linkage, can also use ward or average
         linkage = 'complete'
         h_clustering = AgglomerativeClustering(linkage=linkage, n_clusters=no_of_clusters)
         h_clusters = h_clustering.fit_predict(final_matrix)

@@ -6,7 +6,8 @@ from Article import Article
 
 def retrieve_articles(results, from_date, to_date):
     # Given the date range of the articles to retrieve, retrieves article plain body text from the Guardian API and
-    # returns a list of Article objects.
+    # returns a list of Article objects
+
     api_key = 'aaa8ed1a-d2e0-42f4-9437-11e77e48244b'
 
     # results = 50

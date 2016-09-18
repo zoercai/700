@@ -7,6 +7,7 @@ from Cluster.Node import Node
 
 
 def process(final_matrix, tfidf_vectorizer, articles_list, clusters, cluster_centers):
+    # Turns clustered articles and their centroids into nodes for web application visualisation
 
     feature_names = tfidf_vectorizer.get_feature_names()
     articles_content = [article.body for article in articles_list]

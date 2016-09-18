@@ -1,4 +1,6 @@
 class Article:
+    # Represents an article, contains article title, url, body text, and distance from centroid
+
     name = ''
     url = ''
     body = ''

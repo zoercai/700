@@ -1,4 +1,6 @@
 class Node:
+    # Represents a node (either an article or a centroid) in the web app visualisation
+
     id = ''
     group = ''
     features = ''
